@@ -147,6 +147,8 @@ language: "en_US"
   - `en_US` – English (default)
   - `it_IT` – Italian
   - `sk_SK` – Slovak
+  - `pl_PL` – Polish
+  - `zh_CN` – Simplified Chinese
 - **Custom language files**: You can create your own `.yml` file inside the `lang/` folder.
   - Custom files are **never overwritten** by plugin updates.
   - Any keys missing in a custom file will automatically fall back to `en_US` values, so the plugin will never break due to untranslated strings.

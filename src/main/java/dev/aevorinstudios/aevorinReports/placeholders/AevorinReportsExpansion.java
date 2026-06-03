@@ -4,9 +4,12 @@ import dev.aevorinstudios.aevorinReports.bukkit.BukkitPlugin;
 import dev.aevorinstudios.aevorinReports.database.DatabaseManager;
 import dev.aevorinstudios.aevorinReports.reports.Report;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
 
 /**
  * PlaceholderAPI Expansion for AevorinReports
@@ -23,7 +26,7 @@ public class AevorinReportsExpansion extends PlaceholderExpansion {
     @Override
     @NotNull
     public String getIdentifier() {
-        return "aevorinreports";
+        return "reports";
     }
 
     @Override
@@ -51,73 +54,220 @@ public class AevorinReportsExpansion extends PlaceholderExpansion {
     @Override
     @Nullable
     public String onPlaceholderRequest(Player player, @NotNull String identifier) {
-        if (player == null) {
-            return null;
-        }
-
         DatabaseManager db = plugin.getDatabaseManager();
         if (db == null) {
             return "0";
         }
 
-        switch (identifier.toLowerCase()) {
+        String id = identifier.toLowerCase();
+
+        String serverName = extractServerName(identifier);
+        if (serverName != null) {
+            if (!supportsNetworkServerPlaceholders(db)) {
+                return "0";
+            }
+            id = id.substring(0, id.lastIndexOf("_on_" + serverName.toLowerCase()));
+        }
+
+        id = normalizeCurrentPlayerPlaceholder(id);
+
+        // Check for player-specific placeholders (format: placeholder_playername)
+        UUID targetUuid = null;
+        if (player != null) {
+            targetUuid = player.getUniqueId();
+        }
+
+        // Parse player name suffix if present (e.g., "submitted_by_Notch" or "against_Notch")
+        String playerName = extractPlayerName(identifier);
+        if (playerName != null) {
+            Player targetPlayer = Bukkit.getPlayerExact(playerName);
+            if (targetPlayer != null) {
+                targetUuid = targetPlayer.getUniqueId();
+                // Remove player name from identifier for processing
+                id = id.substring(0, id.lastIndexOf("_" + playerName.toLowerCase()));
+            } else {
+                // Player not online, try to get offline player
+                org.bukkit.OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayerIfCached(playerName);
+                if (offlinePlayer != null && offlinePlayer.hasPlayedBefore()) {
+                    targetUuid = offlinePlayer.getUniqueId();
+                    id = id.substring(0, id.lastIndexOf("_" + playerName.toLowerCase()));
+                } else {
+                    return "0"; // Player not found
+                }
+            }
+        }
+
+        // If we need a player UUID but don't have one, return null
+        if (targetUuid == null && !isServerWidePlaceholder(id)) {
+            return null;
+        }
+
+        final UUID uuid = targetUuid;
+
+        switch (id) {
             // Reports submitted by the player (as reporter)
-            case "reports_submitted":
+            case "submitted_by":
             case "submitted":
-                return String.valueOf(db.getReportsCountByReporter(player.getUniqueId()));
+                return String.valueOf(db.getReportsCountByReporter(uuid));
 
-            case "reports_submitted_pending":
-            case "submitted_pending":
-                return String.valueOf(db.getReportsCountByReporterAndStatus(player.getUniqueId(), Report.ReportStatus.PENDING));
+            case "pending_submitted":
+            case "pending_submitted_by":
+                return String.valueOf(db.getReportsCountByReporterAndStatus(uuid, Report.ReportStatus.PENDING));
 
-            case "reports_submitted_resolved":
-            case "submitted_resolved":
-                return String.valueOf(db.getReportsCountByReporterAndStatus(player.getUniqueId(), Report.ReportStatus.RESOLVED));
+            case "resolved_submitted":
+            case "resolved_submitted_by":
+                return String.valueOf(db.getReportsCountByReporterAndStatus(uuid, Report.ReportStatus.RESOLVED));
 
-            case "reports_submitted_rejected":
-            case "submitted_rejected":
-                return String.valueOf(db.getReportsCountByReporterAndStatus(player.getUniqueId(), Report.ReportStatus.REJECTED));
+            case "rejected_submitted":
+            case "rejected_submitted_by":
+                return String.valueOf(db.getReportsCountByReporterAndStatus(uuid, Report.ReportStatus.REJECTED));
 
-            case "reports_submitted_valid":
-            case "submitted_valid":
+            case "valid_submitted":
+            case "valid_submitted_by":
                 // Valid reports = resolved reports (reports that were acted upon)
-                return String.valueOf(db.getReportsCountByReporterAndStatus(player.getUniqueId(), Report.ReportStatus.RESOLVED));
+                return String.valueOf(db.getReportsCountByReporterAndStatus(uuid, Report.ReportStatus.RESOLVED));
 
             // Reports received against the player (as reported)
-            case "reports_received":
-            case "received":
-                return String.valueOf(db.getReportsCountByReported(player.getUniqueId()));
+            case "against":
+                return String.valueOf(db.getReportsCountByReported(uuid));
 
-            case "reports_received_pending":
-            case "received_pending":
-                return String.valueOf(db.getReportsCountByReportedAndStatus(player.getUniqueId(), Report.ReportStatus.PENDING));
+            case "pending_against":
+                return String.valueOf(db.getReportsCountByReportedAndStatus(uuid, Report.ReportStatus.PENDING));
 
-            case "reports_received_resolved":
-            case "received_resolved":
-                return String.valueOf(db.getReportsCountByReportedAndStatus(player.getUniqueId(), Report.ReportStatus.RESOLVED));
+            case "resolved_against":
+                return String.valueOf(db.getReportsCountByReportedAndStatus(uuid, Report.ReportStatus.RESOLVED));
 
-            case "reports_received_rejected":
-            case "received_rejected":
-                return String.valueOf(db.getReportsCountByReportedAndStatus(player.getUniqueId(), Report.ReportStatus.REJECTED));
+            case "rejected_against":
+                return String.valueOf(db.getReportsCountByReportedAndStatus(uuid, Report.ReportStatus.REJECTED));
 
             // Server-wide statistics (player-independent)
-            case "total_reports":
+            case "total":
+                if (serverName != null) {
+                    return String.valueOf(db.getReportCountByServer(serverName));
+                }
                 return String.valueOf(db.getTotalReportsCount());
 
-            case "pending_reports":
             case "total_pending":
+                if (serverName != null) {
+                    return String.valueOf(db.getReportCountByServerAndStatus(serverName, Report.ReportStatus.PENDING));
+                }
                 return String.valueOf(db.getReportCountByStatus(Report.ReportStatus.PENDING));
 
-            case "resolved_reports":
             case "total_resolved":
+                if (serverName != null) {
+                    return String.valueOf(db.getReportCountByServerAndStatus(serverName, Report.ReportStatus.RESOLVED));
+                }
                 return String.valueOf(db.getReportCountByStatus(Report.ReportStatus.RESOLVED));
 
-            case "rejected_reports":
             case "total_rejected":
+                if (serverName != null) {
+                    return String.valueOf(db.getReportCountByServerAndStatus(serverName, Report.ReportStatus.REJECTED));
+                }
                 return String.valueOf(db.getReportCountByStatus(Report.ReportStatus.REJECTED));
 
             default:
                 return null;
         }
+    }
+
+    /**
+     * Extracts player name from identifier if present.
+     * Looks for known placeholder prefixes and extracts the player name after the last underscore.
+     *
+     * @param identifier the placeholder identifier
+     * @return the player name if found, null otherwise
+     */
+    private String extractPlayerName(String identifier) {
+        String lowerIdentifier = identifier.toLowerCase();
+
+        // Known prefixes that can have player suffixes
+        String[] prefixes = {
+            "pending_submitted_by", "resolved_submitted_by",
+            "rejected_submitted_by", "valid_submitted_by",
+            "pending_against", "resolved_against", "rejected_against",
+            "submitted_by", "against"
+        };
+
+        for (String prefix : prefixes) {
+            if (lowerIdentifier.startsWith(prefix + "_")) {
+                return identifier.substring(prefix.length() + 1);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Converts explicit current-player placeholders into their base identifiers.
+     * Example: submitted_by_player resolves against the PlaceholderAPI player context.
+     *
+     * @param identifier the lowercase placeholder identifier
+     * @return the normalized identifier
+     */
+    private String normalizeCurrentPlayerPlaceholder(String identifier) {
+        switch (identifier) {
+            case "submitted_by_player":
+                return "submitted_by";
+            case "pending_submitted_by_player":
+                return "pending_submitted_by";
+            case "resolved_submitted_by_player":
+                return "resolved_submitted_by";
+            case "valid_submitted_by_player":
+                return "valid_submitted_by";
+            case "rejected_submitted_by_player":
+                return "rejected_submitted_by";
+            case "against_player":
+                return "against";
+            case "pending_against_player":
+                return "pending_against";
+            case "resolved_against_player":
+                return "resolved_against";
+            case "rejected_against_player":
+                return "rejected_against";
+            default:
+                return identifier;
+        }
+    }
+
+    /**
+     * Extracts server name from server-specific statistics placeholders.
+     *
+     * @param identifier the placeholder identifier
+     * @return the server name if found, null otherwise
+     */
+    private String extractServerName(String identifier) {
+        String lowerIdentifier = identifier.toLowerCase();
+        String[] prefixes = {
+            "total_pending", "total_resolved", "total_rejected",
+            "total"
+        };
+
+        for (String prefix : prefixes) {
+            String marker = prefix + "_on_";
+            if (lowerIdentifier.startsWith(marker)) {
+                return identifier.substring(marker.length());
+            }
+        }
+        return null;
+    }
+
+    private boolean supportsNetworkServerPlaceholders(DatabaseManager db) {
+        return plugin.getConfigManager() != null &&
+               plugin.getConfigManager().getConfig() != null &&
+               plugin.getConfigManager().getConfig().getDatabase() != null &&
+               "mysql".equalsIgnoreCase(plugin.getConfigManager().getConfig().getDatabase().getType()) &&
+               db.hasMultipleServers();
+    }
+
+    /**
+     * Checks if a placeholder is server-wide (doesn't require a player)
+     *
+     * @param identifier the placeholder identifier
+     * @return true if the placeholder is server-wide
+     */
+    private boolean isServerWidePlaceholder(String identifier) {
+        return identifier.equals("total") ||
+               identifier.equals("total_pending") ||
+               identifier.equals("total_resolved") ||
+               identifier.equals("total_rejected");
     }
 }

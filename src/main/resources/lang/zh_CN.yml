@@ -1,0 +1,224 @@
+# 可用占位符（并非所有占位符在全部消息中都能生效）:
+# {reporter} - 发起举报的玩家名称
+# {reported} - 被举报的玩家名称
+# {target}   - 目标玩家（多数情况下和被举报人一致）
+# {reason}   - 举报人填写的举报理由
+# {status}   - 举报工单当前状态（例如：待处理、已办结）
+# {color}    - 对应举报状态的颜色代码
+# {id}       - 举报工单唯一数字编号
+# {server}   - 创建举报工单所在的服务器
+# {index}    - 列表内的序号
+# {total}    - 举报工单、分页或条目总数量
+# {page}     - 图形界面的当前页码
+# {start}    - 当前分页首个条目序号
+# {end}      - 当前分页末尾条目序号
+# {category} - 举报类型名称
+# {time}     - 剩余冷却时间
+# {date}     - 举报创建的日期时间
+
+config-version: 1
+
+# GUI界面配置项
+# 包含举报插件交互式图形界面所有文字格式内容
+gui:
+  # 书本样式GUI
+  # 当config.yml内gui.type设置为"book"时启用
+  # 注意：书本内换行请使用'\n'！
+  book:
+    error_creating: "&c创建书本界面失败。"
+    reporting_header: "&4举报对象:\n&c{target}"
+    reasons_header: "&4举报原因:"
+    back_button: "\n&8« 返回举报类型列表"
+    page:
+      title: "&c举报详情\n\n"
+      reporter: "&7举报人: &a{reporter}\n"
+      reported: "&7被举报人: &c{reported}\n"
+      reason: "&7举报理由: "
+      reason_hover: "&c悬停查看"
+      reason_hover_content: "&f{reason}"
+      status: "&7状态: {color}{status}\n"
+      id: "&7编号: &0{id}"
+      server: "&7服务器: &c{server}\n"
+      click_to_change: "\n&8点击修改状态\n"
+      reports_category_header: "&4举报类型\n\n"
+      view_details: "&7点击查看详情"
+    status_options:
+      pending: "&6⚠ 设为待处理\n"
+      resolved: "&a✔ 标记已办结\n"
+      rejected: "&c✘ 标记已驳回\n"
+    hover_text:
+      report_for: "&7点击举报: &f{category}"
+      pending: "&7点击退回待处理"
+      resolved: "&7点击标记办结"
+      rejected: "&7点击标记驳回"
+      back: "&7点击返回举报类型"
+    main_menu:
+      pending:
+        title: "&6• 待处理举报"
+        hover: "&7点击查看"
+      resolved:
+        title: "&a• 已办结举报"
+        hover: "&7点击查看"
+      rejected:
+        title: "&c• 已驳回举报"
+        hover: "&7点击查看"
+    report_list:
+      title: "&4{status}的举报\n"
+      total: "&7总数: {total}\n\n"
+      entry: "&4{index}. &c{reported}"
+      user_title: "&4我的举报\n"
+      user_entry: "&4{index}. &c{reported} {color}({status})"
+
+  # 箱子界面GUI
+  # 当config.yml内gui.type设置为"container"时启用
+  container:
+    shared:
+      separator: "&8──────────────────"
+      navigation:
+        page_indicator:
+          title: "&f&l第{page}页 / 共{total}页"
+          lore: "&7本页展示 {start}-{end} 条，总计{total}条举报"
+        previous_page:
+          title: "&e&l上一页"
+          lore: "&7跳转至第{page}页"
+        next_page:
+          title: "&e&l下一页"
+          lore: "&7跳转至第{page}页"
+        back_button:
+          title: "&e&l返回"
+          lore: "&7回到类型菜单"
+
+    menus:
+      main_menu:
+        title: "举报管理菜单"
+        pending:
+          title: "&e待处理举报"
+          lore:
+            description: "&7查看所有待处理举报。"
+            action: "&e点击进入！"
+        resolved:
+          title: "&a已办结举报"
+          lore:
+            description: "&7查看所有已办结举报。"
+            action: "&e点击进入！"
+        rejected:
+          title: "&c已驳回举报"
+          lore:
+            description: "&7查看所有已驳回举报。"
+            action: "&e点击进入！"
+
+      category_view:
+        title: "{status}的举报"
+        report_item:
+          title: "&b{reporter} → {reported}"
+          lore:
+            reason: "&7举报理由: {reason}"
+            status: "&7状态: {status}"
+            id: "&7单号: {id}"
+            server: "&7服务器: {server}"
+            action: "&e点击管理"
+
+      player_reports:
+        title: "我的举报"
+
+      reason_selector:
+        title: "举报对象: {target}"
+        info_icon:
+          title: "&4正在举报: &c{target}"
+          lore:
+            - ""
+            - "&f选择一项理由进行举报"
+            - "&f点击任意图标提交举报"
+            - ""
+        reason_item:
+          title: "&c{reason}"
+          lore:
+            target: "&4目标玩家: &c{target}"
+            action: "&a点击提交举报"
+
+    manage_report:
+      title: "管理举报 #{id}"
+      back_button:
+        title: "&c&l返回"
+        lore: "&7回到{status}举报列表"
+      details:
+        title: "&b&l举报详情"
+        lore:
+          reporter: "&7举报人: &f{reporter}"
+          reported: "&7被举报人: &f{reported}"
+          reason: "&7举报理由: &f{reason}"
+          status: "&7状态: &f{status}"
+          id: "&7单号: &f{id}"
+          server: "&7服务器: &f{server}"
+      pending:
+        title: "&6&l改为待处理"
+        lore:
+          description: "&7将此举报标记为待审核。"
+          current_status: "&7当前状态: &f{status}"
+          action: "&6点击变更状态"
+      resolved:
+        title: "&a&l改为已办结"
+        lore:
+          description: "&7将此举报标记为处理完成。"
+          current_status: "&7当前状态: &f{status}"
+          action: "&a点击变更状态"
+      rejected:
+        title: "&c&l改为已驳回"
+        lore:
+          description: "&7判定举报无效并驳回。"
+          current_status: "&7当前状态: &f{status}"
+          action: "&c点击变更状态"
+
+# 通用文本
+# 共用文案、状态名称以及默认举报理由
+common:
+  unknown: "未知"
+  anonymous: "匿名"
+  status:
+    pending: "待处理"
+    resolved: "已办结"
+    rejected: "已驳回"
+  reasons:
+    - "开挂/作弊"
+    - "谩骂/辱骂"
+    - "刷屏/广告"
+    - "恶意捣乱/破坏建筑"
+    - "利用游戏漏洞"
+    - "违规皮肤/昵称"
+    - "不当言论"
+    - "其他原因"
+
+# 聊天提示消息
+# 在原版MC聊天栏发送给玩家或管理员的通知、报错、成功提示
+messages:
+  error:
+    no-permission: "&c你没有执行此操作的权限！"
+    player-only: "&c仅游戏内玩家可使用该指令！"
+    invalid-player: "&c找不到该玩家！"
+    invalid-group: "&c无效的举报状态类型。"
+    report-not-found: "&c未找到该举报工单！"
+    no-reports: "&c你当前没有举报记录！"
+    no-status-reports: "&c暂无{status}的举报。"
+    invalid-status-transition: "&c无法将举报状态从{current}改为{status}，不支持该状态变更！"
+    status-invalid: "&c无效状态！可用状态：{statuses}"
+    description-too-short: "&c举报内容过短！最少需要{min}个字"
+    description-too-long: "&c举报内容过长！最多允许{max}个字"
+    category-invalid: "&c无效举报类型！可选类型：{categories}"
+    custom-reason-disabled: "&c自定义举报理由功能已关闭。"
+    custom-reason-too-short: "&c自定义理由字数不足！最少{min}字符"
+    custom-reason-too-long: "&c自定义理由超出上限！最多{max}字符"
+    book-meta-error: "&c创建书本界面失败。"
+
+  success:
+    report-created: "&a举报提交成功！"
+    status-update-success: "&a举报状态修改完成！"
+
+  report:
+    cooldown: "&c需等待{time}后才能再次发起举报。"
+    limit-reached: "&c已达到个人有效举报数量上限。"
+    notification: "&c[举报通知] &e{reporter} &f举报了 &c{reported} &f，类型：&e{category}"
+    status-change: "&7举报#{id}状态已变更为 {color}{status}&7。"
+    custom-reason-prompt: "&e在聊天框输入自定义理由，该消息仅控制台可见。"
+    title: "&6我的有效举报"
+    format: "&7• &e#{id} &7- &f{reason}"
+    details: "&7当前状态: &e{status}\n&7提交时间: &f{date}"

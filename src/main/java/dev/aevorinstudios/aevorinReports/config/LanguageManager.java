@@ -22,7 +22,7 @@ public class LanguageManager {
     private static final Map<String, LanguageManager> instances = new HashMap<>();
 
     // List of officially supported languages bundled within the plugin jar
-    private static final java.util.List<String> SUPPORTED_LANGUAGES = java.util.Arrays.asList("en_US", "it_IT", "sk_SK", "pl_PL");
+    private static final java.util.List<String> SUPPORTED_LANGUAGES = java.util.Arrays.asList("en_US", "it_IT", "sk_SK", "pl_PL", "zh_CN");
 
     private LanguageManager(Plugin plugin, String langName) {
         this.plugin = plugin;

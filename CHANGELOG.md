@@ -2,6 +2,58 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.9-Beta-2] - 2026-05-09
+
+> [!NOTE]
+> This is a **Beta** version. It hasn't been tested, this release introduces new external integrations (PlaceholderAPI) that may behave differently across various server setups. Please test thoroughly before deploying to production environments.
+
+### New Features
+
+- **Player-Specific Placeholder Lookup**: Added support for looking up report statistics for specific players by name.
+  - All player-based placeholders now support a `_<playername>` suffix to query any player's statistics.
+  - Works with both online and offline players (if they have played before).
+  - **Full list of supported player-specific placeholders**:
+    - `%reports_submitted_by_player%` - Total reports submitted by the player viewing the placeholder.
+    - `%reports_pending_submitted_by_player%` - Pending reports submitted by the player viewing the placeholder.
+    - `%reports_resolved_submitted_by_player%` - Resolved reports submitted by the player viewing the placeholder.
+    - `%reports_valid_submitted_by_player%` - Valid reports submitted by the player viewing the placeholder. Currently counts resolved reports.
+    - `%reports_rejected_submitted_by_player%` - Rejected reports submitted by the player viewing the placeholder.
+    - `%reports_against_player%` - Total reports made against the player viewing the placeholder.
+    - `%reports_pending_against_player%` - Pending reports made against the player viewing the placeholder.
+    - `%reports_resolved_against_player%` - Resolved reports made against the player viewing the placeholder.
+    - `%reports_rejected_against_player%` - Rejected reports made against the player viewing the placeholder.
+    - `%reports_submitted_by_<player>%` - Total reports submitted by the specified player.
+    - `%reports_pending_submitted_by_<player>%` - Pending reports submitted by the specified player.
+    - `%reports_resolved_submitted_by_<player>%` - Resolved reports submitted by the specified player.
+    - `%reports_valid_submitted_by_<player>%` - Valid reports submitted by the specified player. Currently counts resolved reports.
+    - `%reports_rejected_submitted_by_<player>%` - Rejected reports submitted by the specified player.
+    - `%reports_against_<player>%` - Total reports made against the specified player.
+    - `%reports_pending_against_<player>%` - Pending reports made against the specified player.
+    - `%reports_resolved_against_<player>%` - Resolved reports made against the specified player.
+    - `%reports_rejected_against_<player>%` - Rejected reports made against the specified player.
+  - **Server-wide statistics placeholders**:
+    - `%reports_total%` - Total number of reports in the entire network.
+    - `%reports_total_pending%` - Total pending reports on the network.
+    - `%reports_total_resolved%` - Total resolved reports on the network.
+    - `%reports_total_rejected%` - Total rejected reports on the network.
+  - **Specific-server statistics placeholders**:
+    - `%reports_total_on_<server>%` - Total reports created on a specific server.
+    - `%reports_total_pending_on_<server>%` - Total pending reports on a specific server.
+    - `%reports_total_resolved_on_<server>%` - Total resolved reports on a specific server.
+    - `%reports_total_rejected_on_<server>%` - Total rejected reports on a specific server.
+  - Specific-server placeholders only return server-specific counts when the plugin is using MySQL with multiple servers connected to the same database.
+
+### Improvements & Bug Fixes
+
+- PlaceholderAPI expansion now gracefully handles offline players by checking player cache.
+- Removed old short/legacy PlaceholderAPI aliases so only the clean placeholder names are supported.
+
+### Contributors
+
+Special thanks to **feijiwang** A.K.A **nice** for the **Simplified Chinese** translation!
+
+We are looking for translators to add even more language support to AevorinReports! Join our [Discord server](https://discord.gg/SV2dXt5SwF) and open a ticket if you'd like to help!
+
 ## [1.0.9-Beta-1] - 2026-05-09
 
 > [!NOTE]

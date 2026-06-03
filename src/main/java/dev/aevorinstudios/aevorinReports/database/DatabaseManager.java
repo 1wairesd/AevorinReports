@@ -234,6 +234,35 @@ public class DatabaseManager {
         return 0;
     }
 
+    public int getReportCountByServer(String serverName) {
+        String sql = "SELECT COUNT(*) FROM reports WHERE server_name = ?";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, serverName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            logger.error("Failed to get report count for server {}: {}", serverName, e.getMessage());
+        }
+        return 0;
+    }
+
+    public int getReportCountByServerAndStatus(String serverName, Report.ReportStatus status) {
+        String sql = "SELECT COUNT(*) FROM reports WHERE server_name = ? AND status = ?";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, serverName);
+            stmt.setString(2, status.name());
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            logger.error("Failed to get report count for server {} and status {}: {}", serverName, status, e.getMessage());
+        }
+        return 0;
+    }
+
     /**
      * Get the highest report ID currently in the database.
      * 
