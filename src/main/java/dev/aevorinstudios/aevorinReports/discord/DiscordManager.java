@@ -35,6 +35,8 @@ public class DiscordManager {
     private ScheduledFuture<?> presenceTask;
     private ScheduledFuture<?> pollTask;
     private long lastReportId = -1;
+    private boolean invalidChannelIdWarned;
+    private boolean invalidLogChannelIdWarned;
 
     public DiscordManager(BukkitPlugin plugin) {
         this.plugin = plugin;
@@ -239,7 +241,12 @@ public class DiscordManager {
         if (!enabled || jda == null || channelId == null || channelId.isEmpty())
             return;
 
-        TextChannel channel = jda.getTextChannelById(channelId);
+        if (!isDiscordId(channelId)) {
+            warnInvalidChannelIdOnce();
+            return;
+        }
+
+        TextChannel channel = jda.getTextChannelById(channelId.trim());
         if (channel == null) {
             plugin.getLogger().warning("Discord channel with ID " + channelId + " not found!");
             return;
@@ -298,7 +305,12 @@ public class DiscordManager {
         if (!enabled || jda == null || logChannelId == null || logChannelId.isEmpty())
             return;
 
-        TextChannel channel = jda.getTextChannelById(logChannelId);
+        if (!isDiscordId(logChannelId)) {
+            warnInvalidLogChannelIdOnce();
+            return;
+        }
+
+        TextChannel channel = jda.getTextChannelById(logChannelId.trim());
         if (channel == null) {
             plugin.getLogger().warning("Discord log channel with ID " + logChannelId + " not found!");
             return;
@@ -334,5 +346,25 @@ public class DiscordManager {
             plugin.getLogger().warning(
                     "[Discord] Could not send log update to channel " + logChannelId + " - " + e.getMessage());
         }
+    }
+
+    private boolean isDiscordId(String configuredValue) {
+        return configuredValue != null && configuredValue.trim().matches("\\d+");
+    }
+
+    private void warnInvalidChannelIdOnce() {
+        if (invalidChannelIdWarned) {
+            return;
+        }
+        invalidChannelIdWarned = true;
+        plugin.getLogger().warning("[Discord] Invalid discord.channel-id in config.yml. Use only the numeric channel ID, not a Discord URL.");
+    }
+
+    private void warnInvalidLogChannelIdOnce() {
+        if (invalidLogChannelIdWarned) {
+            return;
+        }
+        invalidLogChannelIdWarned = true;
+        plugin.getLogger().warning("[Discord] Invalid discord.log-channel-id in config.yml. Use only the numeric channel ID, not a Discord URL.");
     }
 }

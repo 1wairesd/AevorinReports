@@ -1,0 +1,95 @@
+location: world:9.599:67.000:-30.704
+enabled: true
+display-range: 48
+update-range: 48
+update-interval: 20
+facing: 0.0
+down-origin: false
+pages:
+- lines:
+  - content: '&b&lAevorinReports &f&lNetwork Stats'
+    height: 0.3
+  - content: '&8&m------------------------------'
+    height: 0.25
+  - content: '&fTotal Reports: &b%reports_total%'
+    height: 0.25
+  - content: '&ePending: &f%reports_total_pending%'
+    height: 0.25
+  - content: '&aResolved: &f%reports_total_resolved%'
+    height: 0.25
+  - content: '&cRejected: &f%reports_total_rejected%'
+    height: 0.35
+  - content: '&7Server: &fsurvival'
+    height: 0.25
+  - content: '&fTotal: &b%reports_total_on_survival% &8| &ePending: &f%reports_total_pending_on_survival%'
+    height: 0.25
+  - content: '&aResolved: &f%reports_total_resolved_on_survival% &8| &cRejected: &f%reports_total_rejected_on_survival%'
+    height: 0.3
+  - content: '&8&m------------------------------'
+    height: 0.25
+  - content: '&7Tip: replace &fsurvival &7with your server-name.'
+    height: 0.3
+  - content: '&b&lAevorinReports &f&lYour Submitted Reports'
+    height: 0.3
+  - content: '&8&m------------------------------'
+    height: 0.25
+  - content: '&fTotal Submitted: &b%reports_submitted%'
+    height: 0.25
+  - content: '&ePending Submitted: &f%reports_pending_submitted%'
+    height: 0.25
+  - content: '&aResolved Submitted: &f%reports_resolved_submitted%'
+    height: 0.25
+  - content: '&aValid Submitted: &f%reports_valid_submitted%'
+    height: 0.25
+  - content: '&cRejected Submitted: &f%reports_rejected_submitted%'
+    height: 0.3
+  - content: '&8&m------------------------------'
+    height: 0.25
+  - content: '&7These stats follow whoever is viewing.'
+    height: 0.3
+  - content: '&b&lAevorinReports &f&lReports Against You'
+    height: 0.3
+  - content: '&8&m------------------------------'
+    height: 0.25
+  - content: '&fReports Against You: &b%reports_against%'
+    height: 0.25
+  - content: '&ePending Against You: &f%reports_pending_against%'
+    height: 0.25
+  - content: '&aResolved Against You: &f%reports_resolved_against%'
+    height: 0.25
+  - content: '&cRejected Against You: &f%reports_rejected_against%'
+    height: 0.3
+  - content: '&8&m------------------------------'
+    height: 0.25
+  - content: '&7Useful for personal holograms and scoreboards.'
+    height: 0.3
+- lines:
+  - content: '&b&lAevorinReports &f&lNamed Player Template'
+    height: 0.3
+  - content: '&8&m------------------------------'
+    height: 0.25
+  - content: '&7Example player: &fNotch'
+    height: 0.25
+  - content: '&fSubmitted: &b%reports_submitted_by_Notch%'
+    height: 0.25
+  - content: '&ePending Submitted: &f%reports_pending_submitted_by_Notch%'
+    height: 0.25
+  - content: '&aResolved Submitted: &f%reports_resolved_submitted_by_Notch%'
+    height: 0.25
+  - content: '&aValid Submitted: &f%reports_valid_submitted_by_Notch%'
+    height: 0.25
+  - content: '&cRejected Submitted: &f%reports_rejected_submitted_by_Notch%'
+    height: 0.3
+  - content: '&fAgainst: &b%reports_against_Notch%'
+    height: 0.25
+  - content: '&ePending Against: &f%reports_pending_against_Notch%'
+    height: 0.25
+  - content: '&aResolved Against: &f%reports_resolved_against_Notch%'
+    height: 0.25
+  - content: '&cRejected Against: &f%reports_rejected_against_Notch%'
+    height: 0.3
+  - content: '&8&m------------------------------'
+    height: 0.25
+  - content: '&7Replace &fNotch &7with any cached player name.'
+    height: 0.3
+  actions: {}

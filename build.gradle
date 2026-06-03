@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'dev.aevorinstudios'
-version = '1.0.9-Beta-2'
+version = '1.0.9'
 description = 'A comprehensive reporting system for Minecraft servers'
 
 java {

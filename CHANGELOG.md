@@ -2,10 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.0.9-Beta-2] - 2026-05-09
-
-> [!NOTE]
-> This is a **Beta** version. It hasn't been tested, this release introduces new external integrations (PlaceholderAPI) that may behave differently across various server setups. Please test thoroughly before deploying to production environments.
+## [1.0.9] - 2026-06-03
 
 ### New Features
 
@@ -13,15 +10,15 @@ All notable changes to this project will be documented in this file.
   - All player-based placeholders now support a `_<playername>` suffix to query any player's statistics.
   - Works with both online and offline players (if they have played before).
   - **Full list of supported player-specific placeholders**:
-    - `%reports_submitted_by_player%` - Total reports submitted by the player viewing the placeholder.
-    - `%reports_pending_submitted_by_player%` - Pending reports submitted by the player viewing the placeholder.
-    - `%reports_resolved_submitted_by_player%` - Resolved reports submitted by the player viewing the placeholder.
-    - `%reports_valid_submitted_by_player%` - Valid reports submitted by the player viewing the placeholder. Currently counts resolved reports.
-    - `%reports_rejected_submitted_by_player%` - Rejected reports submitted by the player viewing the placeholder.
-    - `%reports_against_player%` - Total reports made against the player viewing the placeholder.
-    - `%reports_pending_against_player%` - Pending reports made against the player viewing the placeholder.
-    - `%reports_resolved_against_player%` - Resolved reports made against the player viewing the placeholder.
-    - `%reports_rejected_against_player%` - Rejected reports made against the player viewing the placeholder.
+    - `%reports_submitted%` - Total reports submitted by the player viewing the placeholder.
+    - `%reports_pending_submitted%` - Pending reports submitted by the player viewing the placeholder.
+    - `%reports_resolved_submitted%` - Resolved reports submitted by the player viewing the placeholder.
+    - `%reports_valid_submitted%` - Valid reports submitted by the player viewing the placeholder. Currently counts resolved reports.
+    - `%reports_rejected_submitted%` - Rejected reports submitted by the player viewing the placeholder.
+    - `%reports_against%` - Total reports made against the player viewing the placeholder.
+    - `%reports_pending_against%` - Pending reports made against the player viewing the placeholder.
+    - `%reports_resolved_against%` - Resolved reports made against the player viewing the placeholder.
+    - `%reports_rejected_against%` - Rejected reports made against the player viewing the placeholder.
     - `%reports_submitted_by_<player>%` - Total reports submitted by the specified player.
     - `%reports_pending_submitted_by_<player>%` - Pending reports submitted by the specified player.
     - `%reports_resolved_submitted_by_<player>%` - Resolved reports submitted by the specified player.
@@ -46,11 +43,12 @@ All notable changes to this project will be documented in this file.
 ### Improvements & Bug Fixes
 
 - PlaceholderAPI expansion now gracefully handles offline players by checking player cache.
-- Removed old short/legacy PlaceholderAPI aliases so only the clean placeholder names are supported.
+- Simplified the placeholders for better understanding.
+- Discord channel ID settings now validate numeric IDs before sending notifications, preventing console spam when a Discord URL is configured by mistake.
 
 ### Contributors
 
-Special thanks to **feijiwang** A.K.A **nice** for the **Simplified Chinese** translation!
+Special thanks to **feijiwang** A.K.A **nice** for the **Simplified Chinese** translation and **GraviTrace** for the **Polish** translation!
 
 We are looking for translators to add even more language support to AevorinReports! Join our [Discord server](https://discord.gg/SV2dXt5SwF) and open a ticket if you'd like to help!
 

@@ -69,8 +69,6 @@ public class AevorinReportsExpansion extends PlaceholderExpansion {
             id = id.substring(0, id.lastIndexOf("_on_" + serverName.toLowerCase()));
         }
 
-        id = normalizeCurrentPlayerPlaceholder(id);
-
         // Check for player-specific placeholders (format: placeholder_playername)
         UUID targetUuid = null;
         if (player != null) {
@@ -107,23 +105,44 @@ public class AevorinReportsExpansion extends PlaceholderExpansion {
         switch (id) {
             // Reports submitted by the player (as reporter)
             case "submitted_by":
+                if (playerName == null) {
+                    return null;
+                }
+                return String.valueOf(db.getReportsCountByReporter(uuid));
             case "submitted":
                 return String.valueOf(db.getReportsCountByReporter(uuid));
 
-            case "pending_submitted":
             case "pending_submitted_by":
+                if (playerName == null) {
+                    return null;
+                }
+                return String.valueOf(db.getReportsCountByReporterAndStatus(uuid, Report.ReportStatus.PENDING));
+            case "pending_submitted":
                 return String.valueOf(db.getReportsCountByReporterAndStatus(uuid, Report.ReportStatus.PENDING));
 
-            case "resolved_submitted":
             case "resolved_submitted_by":
+                if (playerName == null) {
+                    return null;
+                }
+                return String.valueOf(db.getReportsCountByReporterAndStatus(uuid, Report.ReportStatus.RESOLVED));
+            case "resolved_submitted":
                 return String.valueOf(db.getReportsCountByReporterAndStatus(uuid, Report.ReportStatus.RESOLVED));
 
-            case "rejected_submitted":
             case "rejected_submitted_by":
+                if (playerName == null) {
+                    return null;
+                }
+                return String.valueOf(db.getReportsCountByReporterAndStatus(uuid, Report.ReportStatus.REJECTED));
+            case "rejected_submitted":
                 return String.valueOf(db.getReportsCountByReporterAndStatus(uuid, Report.ReportStatus.REJECTED));
 
-            case "valid_submitted":
             case "valid_submitted_by":
+                if (playerName == null) {
+                    return null;
+                }
+                // Valid reports = resolved reports (reports that were acted upon)
+                return String.valueOf(db.getReportsCountByReporterAndStatus(uuid, Report.ReportStatus.RESOLVED));
+            case "valid_submitted":
                 // Valid reports = resolved reports (reports that were acted upon)
                 return String.valueOf(db.getReportsCountByReporterAndStatus(uuid, Report.ReportStatus.RESOLVED));
 
@@ -194,38 +213,6 @@ public class AevorinReportsExpansion extends PlaceholderExpansion {
             }
         }
         return null;
-    }
-
-    /**
-     * Converts explicit current-player placeholders into their base identifiers.
-     * Example: submitted_by_player resolves against the PlaceholderAPI player context.
-     *
-     * @param identifier the lowercase placeholder identifier
-     * @return the normalized identifier
-     */
-    private String normalizeCurrentPlayerPlaceholder(String identifier) {
-        switch (identifier) {
-            case "submitted_by_player":
-                return "submitted_by";
-            case "pending_submitted_by_player":
-                return "pending_submitted_by";
-            case "resolved_submitted_by_player":
-                return "resolved_submitted_by";
-            case "valid_submitted_by_player":
-                return "valid_submitted_by";
-            case "rejected_submitted_by_player":
-                return "rejected_submitted_by";
-            case "against_player":
-                return "against";
-            case "pending_against_player":
-                return "pending_against";
-            case "resolved_against_player":
-                return "resolved_against";
-            case "rejected_against_player":
-                return "rejected_against";
-            default:
-                return identifier;
-        }
     }
 
     /**
