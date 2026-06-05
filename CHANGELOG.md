@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.9.1] - 2026-06-05
+
+### Improvements & Bug Fixes
+
+- Localized status placeholders now use language-file values instead of raw enum names.
+  - Affected `{status}` placeholders now display values such as `common.status.pending` instead of `PENDING`.
+  - Applies to report details, status-change messages, hover text, current-status lore, and empty status-list messages.
+- Fixed `/reports <status>` ignoring `reports.gui.type: container`.
+  - Commands such as `/reports REJECTED` now open the configured container GUI directly instead of opening a book first.
+- Updated the Shadow build plugin to fix ASM relocation failures during `shadowJar` on newer Gradle/JDK environments.
+
+### Contributors
+
+Special thanks to **feijiwang** A.K.A **nice** for reporting these issues to us.
+
 ## [1.0.9] - 2026-06-03
 
 ### New Features

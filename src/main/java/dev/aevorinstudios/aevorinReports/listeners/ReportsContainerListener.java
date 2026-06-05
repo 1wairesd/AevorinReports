@@ -35,14 +35,14 @@ public class ReportsContainerListener implements Listener {
         if (holder == null) return;
 
         // If the click is in our custom inventory, cancel it by default
-        if (holder instanceof ReportsMenuHolder || 
-            holder instanceof CategoryReportsHolder || 
-            holder instanceof ReportManageHolder || 
+        if (holder instanceof ReportsMenuHolder ||
+            holder instanceof CategoryReportsHolder ||
+            holder instanceof ReportManageHolder ||
             holder instanceof ReportReasonHolder ||
             holder instanceof PlayerReportsHolder) {
-            
+
             event.setCancelled(true);
-            
+
             // If they clicked outside the top inventory (e.g. in their own inventory), just cancel and return
             if (inv != event.getView().getTopInventory()) return;
             ItemStack clicked = event.getCurrentItem();
@@ -130,7 +130,7 @@ public class ReportsContainerListener implements Listener {
 
     private void handleManageClick(Player player, ReportManageHolder holder, int slot) {
         Report report = holder.getReport();
-        
+
         if (slot == 36) {
             java.util.List<Report> reports = plugin.getDatabaseManager().getReportsByStatus(report.getStatus());
             new CategoryContainerGUI(plugin).openCategoryGUI(player, report.getStatus(), reports, 0);
@@ -146,11 +146,11 @@ public class ReportsContainerListener implements Listener {
         if (newStatus != null && newStatus != report.getStatus()) {
             report.setStatus(newStatus);
             plugin.getDatabaseManager().updateReport(report);
-            
+
             // Reopen category view
             List<Report> reports = plugin.getDatabaseManager().getReportsByStatus(newStatus);
             new CategoryContainerGUI(plugin).openCategoryGUI(player, newStatus, reports);
-            
+
             LanguageManager lang = LanguageManager.get(plugin);
             String statusColor = switch(newStatus) {
                 case PENDING -> "&6";
@@ -159,7 +159,7 @@ public class ReportsContainerListener implements Listener {
             };
             dev.aevorinstudios.aevorinReports.utils.MessageUtils.sendMessage(player, lang.getMessage("messages.report.status-change", java.util.Map.of(
                 "id", String.valueOf(report.getId()),
-                "status", newStatus.name(),
+                "status", lang.getLocalizedStatus(newStatus),
                 "color", statusColor
             )));
         }
@@ -189,15 +189,15 @@ public class ReportsContainerListener implements Listener {
             ItemMeta meta = clicked.getItemMeta();
             if (meta != null) {
                 String reasonName = meta.getPersistentDataContainer().get(
-                    new org.bukkit.NamespacedKey(plugin, "reason_name"), 
+                    new org.bukkit.NamespacedKey(plugin, "reason_name"),
                     org.bukkit.persistence.PersistentDataType.STRING
                 );
-                
+
                 if (reasonName == null) {
                     // Fallback to display name if PDC is missing for some reason
                     reasonName = org.bukkit.ChatColor.stripColor(meta.getDisplayName());
                 }
-                
+
                 player.closeInventory();
                 // Execute command as player for consistency
                 player.performCommand("report " + holder.getTargetPlayer() + " " + reasonName);

@@ -27,7 +27,7 @@ public class SetReportStatusCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         LanguageManager lang = LanguageManager.get(plugin);
-        
+
         if (!(sender instanceof Player player)) {
             MessageUtils.sendMessage(sender, lang.getMessage("messages.error.player-only"));
             return true;
@@ -48,34 +48,34 @@ public class SetReportStatusCommand implements CommandExecutor, TabCompleter {
             String statusStr = args[2].toUpperCase();
             Report.ReportStatus newStatus = Report.ReportStatus.valueOf(statusStr);
             Report report = plugin.getDatabaseManager().getReport(reportId);
-            
+
             if (report == null) {
                 MessageUtils.sendMessage(player, lang.getMessage("messages.error.report-not-found"));
                 return true;
             }
-            
+
             if (report.getStatus() == newStatus) {
                 MessageUtils.sendMessage(player, lang.getMessage("messages.error.status-already-set"));
                 return true;
             }
-            
+
             report.setStatus(newStatus);
             plugin.getDatabaseManager().updateReport(report);
-            
+
             String statusColor = switch(newStatus) {
             case PENDING -> "&6";
             case RESOLVED -> "&a";
             case REJECTED -> "&c";
             };
-            
+
             MessageUtils.sendMessage(player, lang.getMessage("messages.report.status-change", Map.of(
                 "id", String.valueOf(reportId),
-                "status", newStatus.name(),
+                "status", lang.getLocalizedStatus(newStatus),
                 "color", statusColor
             )));
-            
+
             plugin.getLogger().fine("Report " + reportId + " status changed to " + newStatus.name() + " by " + player.getName());
-            
+
             player.closeInventory();
         } catch (NumberFormatException e) {
             MessageUtils.sendMessage(player, lang.getMessage("messages.error.invalid-report-id"));

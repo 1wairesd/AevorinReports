@@ -5,7 +5,7 @@
 # {reason}   - 举报人填写的举报理由
 # {status}   - 举报工单当前状态（例如：待处理、已办结）
 # {color}    - 对应举报状态的颜色代码
-# {id}       - 举报工单唯一数字编号
+# {id}       - 举报工单唯一数字编号（单号）
 # {server}   - 创建举报工单所在的服务器
 # {index}    - 列表内的序号
 # {total}    - 举报工单、分页或条目总数量
@@ -16,7 +16,7 @@
 # {time}     - 剩余冷却时间
 # {date}     - 举报创建的日期时间
 
-config-version: 1
+config-version: 2
 
 # GUI界面配置项
 # 包含举报插件交互式图形界面所有文字格式内容
@@ -28,6 +28,7 @@ gui:
     error_creating: "&c创建书本界面失败。"
     reporting_header: "&4举报对象:\n&c{target}"
     reasons_header: "&4举报原因:"
+    custom_reason: "&c• 自定义理由"
     back_button: "\n&8« 返回举报类型列表"
     page:
       title: "&c举报详情\n\n"
@@ -48,6 +49,7 @@ gui:
       rejected: "&c✘ 标记已驳回\n"
     hover_text:
       report_for: "&7点击举报: &f{category}"
+      custom_reason: "&7点击填写自定义理由"
       pending: "&7点击退回待处理"
       resolved: "&7点击标记办结"
       rejected: "&7点击标记驳回"
@@ -135,6 +137,9 @@ gui:
           lore:
             target: "&4目标玩家: &c{target}"
             action: "&a点击提交举报"
+        custom_reason_item:
+          title: "&c自定义理由"
+          lore: "&7点击输入自定义理由"
 
     manage_report:
       title: "管理举报 #{id}"
@@ -191,6 +196,8 @@ common:
 # 聊天提示消息
 # 在原版MC聊天栏发送给玩家或管理员的通知、报错、成功提示
 messages:
+  prefix: "<gradient:#AFA3FF:#AFA3FF>举报</gradient> <grey>➡</grey>"
+
   error:
     no-permission: "&c你没有执行此操作的权限！"
     player-only: "&c仅游戏内玩家可使用该指令！"
@@ -208,6 +215,12 @@ messages:
     custom-reason-too-short: "&c自定义理由字数不足！最少{min}字符"
     custom-reason-too-long: "&c自定义理由超出上限！最多{max}字符"
     book-meta-error: "&c创建书本界面失败。"
+    usage-report: "&c用法：/report <玩家> [理由]"
+    usage-viewreport: "&c用法：/viewreport <编号>"
+    usage-setstatus: "&c用法：/setreportstatus <编号> to <状态>"
+    invalid-report-id: "&c无效的举报编号！"
+    status-already-set: "&c该举报已处于此状态！"
+    cannot-report-self: "&c你不能举报自己！"
 
   success:
     report-created: "&a举报提交成功！"
@@ -218,7 +231,11 @@ messages:
     limit-reached: "&c已达到个人有效举报数量上限。"
     notification: "&c[举报通知] &e{reporter} &f举报了 &c{reported} &f，类型：&e{category}"
     status-change: "&7举报#{id}状态已变更为 {color}{status}&7。"
-    custom-reason-prompt: "&e在聊天框输入自定义理由，该消息仅控制台可见。"
+    custom-reason-prompt: "&e在聊天框输入自定义理由，该消息仅管理员可见。"
     title: "&6我的有效举报"
     format: "&7• &e#{id} &7- &f{reason}"
     details: "&7当前状态: &e{status}\n&7提交时间: &f{date}"
+
+  admin:
+    reload-success: "{prefix} &a配置重载成功！"
+    reload-failure: "{prefix} &c配置重载失败，请检查控制台。"

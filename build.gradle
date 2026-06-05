@@ -1,10 +1,10 @@
 plugins {
     id 'java'
-    id 'com.gradleup.shadow' version '8.3.0'
+    id 'com.gradleup.shadow' version '9.2.2'
 }
 
 group = 'dev.aevorinstudios'
-version = '1.0.9'
+version = '1.0.9.1'
 description = 'A comprehensive reporting system for Minecraft servers'
 
 java {
@@ -31,7 +31,7 @@ dependencies {
 
     // Paper API
     compileOnly 'io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT'
-    
+
 
 
     // HikariCP (shaded)

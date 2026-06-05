@@ -27,7 +27,7 @@ public class ReportManageGUI {
         LanguageManager lang = LanguageManager.get(plugin);
         String title = lang.getMessage("gui.container.manage_report.title", Map.of("id", String.valueOf(report.getId())));
         Inventory gui = Bukkit.createInventory(new dev.aevorinstudios.aevorinReports.gui.holders.ReportManageHolder(report), 54, title);
-        
+
         // Fill a background with light-gray glass panes
         ItemStack background = new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
         ItemMeta bgMeta = background.getItemMeta();
@@ -35,7 +35,7 @@ public class ReportManageGUI {
             bgMeta.setDisplayName(" ");
             background.setItemMeta(bgMeta);
         }
-        
+
         for (int i = 0; i < 54; i++) {
             gui.setItem(i, background);
         }
@@ -43,10 +43,10 @@ public class ReportManageGUI {
         // Convert UUIDs to player names
         String reporterName = dev.aevorinstudios.aevorinReports.utils.PlayerNameResolver.resolvePlayerName(report.getReporter());
         String reportedName = dev.aevorinstudios.aevorinReports.utils.PlayerNameResolver.resolvePlayerName(report.getReported());
-        
+
         if (reporterName == null) reporterName = lang.getMessage("common.unknown");
         if (reportedName == null) reportedName = lang.getMessage("common.unknown");
-        
+
         // Info item
         ItemStack info = new ItemStack(Material.ENCHANTED_BOOK);
         ItemMeta infoMeta = info.getItemMeta();
@@ -58,7 +58,7 @@ public class ReportManageGUI {
         if (serverName == null || serverName.isEmpty()) {
             serverName = lang.getMessage("common.unknown");
         }
-        
+
         infoMeta.setLore(java.util.List.of(
             lang.getMessage("gui.container.shared.separator"),
             lang.getMessage("gui.container.manage_report.details.lore.reporter", Map.of("reporter", reporterName)),
@@ -71,7 +71,7 @@ public class ReportManageGUI {
         ));
         info.addUnsafeEnchantment(org.bukkit.enchantments.Enchantment.DURABILITY, 1);
         info.setItemMeta(infoMeta);
-        
+
         // Center the book in the GUI (slot 22 is the center of a chest inventory)
         gui.setItem(22, info);
 
@@ -82,12 +82,12 @@ public class ReportManageGUI {
             glassMeta.setDisplayName(" ");
             glass.setItemMeta(glassMeta);
         }
-        
+
         // Create a visual frame around the centered report details
         for (int slot : new int[]{12, 13, 14, 21, 23, 30, 31, 32}) {
             gui.setItem(slot, glass);
         }
-        
+
         // Only show management buttons if player has permission
         if (player.hasPermission("aevorinreports.manage")) {
             // Move to Pending
@@ -98,7 +98,7 @@ public class ReportManageGUI {
                 pendingMeta.setLore(java.util.List.of(
                     lang.getMessage("gui.container.shared.separator"),
                     lang.getMessage("gui.container.manage_report.pending.lore.description"),
-                    lang.getMessage("gui.container.manage_report.pending.lore.current_status", Map.of("status", report.getStatus().toString())),
+                    lang.getMessage("gui.container.manage_report.pending.lore.current_status", Map.of("status", lang.getLocalizedStatus(report.getStatus()))),
                     lang.getMessage("gui.container.shared.separator"),
                     lang.getMessage("gui.container.manage_report.pending.lore.action")
                 ));
@@ -113,7 +113,7 @@ public class ReportManageGUI {
                 resolvedMeta.setLore(java.util.List.of(
                     lang.getMessage("gui.container.shared.separator"),
                     lang.getMessage("gui.container.manage_report.resolved.lore.description"),
-                    lang.getMessage("gui.container.manage_report.resolved.lore.current_status", Map.of("status", report.getStatus().toString())),
+                    lang.getMessage("gui.container.manage_report.resolved.lore.current_status", Map.of("status", lang.getLocalizedStatus(report.getStatus()))),
                     lang.getMessage("gui.container.shared.separator"),
                     lang.getMessage("gui.container.manage_report.resolved.lore.action")
                 ));
@@ -136,7 +136,7 @@ public class ReportManageGUI {
                 gui.setItem(53, rejected);
             }
         }
-        
+
         // Add back button to go back to category reports
         ItemStack backButton = new ItemStack(Material.DARK_OAK_DOOR);
         ItemMeta backMeta = backButton.getItemMeta();
@@ -183,7 +183,7 @@ public class ReportManageGUI {
 
             void add(net.md_5.bungee.api.chat.TextComponent component, String rawText) {
                 int estimatedLines = 0;
-                
+
                 // Only count actual visual breaks and long wrapping sentences
                 if (rawText.equals("\n")) {
                     estimatedLines = 1;
@@ -202,7 +202,7 @@ public class ReportManageGUI {
                     currentPage.clear();
                     linesUsed = 0;
                 }
-                
+
                 currentPage.add(component);
                 linesUsed += estimatedLines;
             }
@@ -266,7 +266,7 @@ public class ReportManageGUI {
                 paginator.add(createInteractiveLegacy(
                     pendingText,
                     "/setreportstatus " + report.getId() + " to PENDING",
-                    lang.getMessage("gui.book.hover_text.pending", Map.of("status", report.getStatus().toString()))
+                    lang.getMessage("gui.book.hover_text.pending", Map.of("status", lang.getLocalizedStatus(report.getStatus())))
                 ), pendingText);
             }
 
@@ -275,7 +275,7 @@ public class ReportManageGUI {
                 paginator.add(createInteractiveLegacy(
                     resolvedText,
                     "/setreportstatus " + report.getId() + " to RESOLVED",
-                    lang.getMessage("gui.book.hover_text.resolved", Map.of("status", report.getStatus().toString()))
+                    lang.getMessage("gui.book.hover_text.resolved", Map.of("status", lang.getLocalizedStatus(report.getStatus())))
                 ), resolvedText);
             }
 
@@ -284,7 +284,7 @@ public class ReportManageGUI {
                 paginator.add(createInteractiveLegacy(
                     rejectedText,
                     "/setreportstatus " + report.getId() + " to REJECTED",
-                    lang.getMessage("gui.book.hover_text.rejected", Map.of("status", report.getStatus().toString()))
+                    lang.getMessage("gui.book.hover_text.rejected", Map.of("status", lang.getLocalizedStatus(report.getStatus())))
                 ), rejectedText);
             }
         }

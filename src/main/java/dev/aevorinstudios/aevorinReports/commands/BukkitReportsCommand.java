@@ -2,6 +2,7 @@ package dev.aevorinstudios.aevorinReports.commands;
 
 import dev.aevorinstudios.aevorinReports.bukkit.BukkitPlugin;
 import dev.aevorinstudios.aevorinReports.gui.BookGUI;
+import dev.aevorinstudios.aevorinReports.gui.CategoryContainerGUI;
 import dev.aevorinstudios.aevorinReports.reports.Report;
 import dev.aevorinstudios.aevorinReports.config.LanguageManager;
 import dev.aevorinstudios.aevorinReports.utils.MessageUtils;
@@ -43,16 +44,16 @@ public class BukkitReportsCommand implements CommandExecutor, TabCompleter {
         if (args.length == 1) {
             List<String> groups = new ArrayList<>();
             String partialGroup = args[0].toUpperCase();
-            
+
             for (Report.ReportStatus status : Report.ReportStatus.values()) {
                 if (status.name().startsWith(partialGroup)) {
                     groups.add(status.name());
                 }
             }
-            
+
             return groups;
         }
-        
+
         return new ArrayList<>();
     }
 
@@ -133,10 +134,17 @@ public class BukkitReportsCommand implements CommandExecutor, TabCompleter {
             lastCacheUpdate = currentTime;
         }
 
+        String guiType = plugin.getConfig().getString("reports.gui.type", "book");
+        if (guiType.equalsIgnoreCase("container")) {
+            List<Report> reports = plugin.getDatabaseManager().getReportsByStatus(status);
+            new CategoryContainerGUI(plugin).openCategoryGUI(player, status, reports);
+            return;
+        }
+
         new BookGUI(plugin).showReportsByStatus(player, status);
     }
 
     private void showReportsContainerGUI(Player player) {
-        new dev.aevorinstudios.aevorinReports.gui.CategoryContainerGUI(plugin).openMainMenu(player);
+        new CategoryContainerGUI(plugin).openMainMenu(player);
     }
 }
