@@ -1,10 +1,13 @@
 package dev.aevorinstudios.aevorinReports.gui;
 
 import dev.aevorinstudios.aevorinReports.bukkit.BukkitPlugin;
-import dev.aevorinstudios.aevorinReports.reports.Report;
 import dev.aevorinstudios.aevorinReports.config.LanguageManager;
-import dev.aevorinstudios.aevorinReports.utils.PlayerNameResolver;
+import dev.aevorinstudios.aevorinReports.reports.Report;
 import dev.aevorinstudios.aevorinReports.utils.MessageUtils;
+import dev.aevorinstudios.aevorinReports.utils.PlayerNameResolver;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -14,20 +17,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.ItemFlag;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Handles all GUI-related functionality for the AevorinReports plugin.
  * This class centralizes the creation and display of both book and chest GUIs for report management.
  */
 public class BookGUI {
+
     private final BukkitPlugin plugin;
     private static final int ITEMS_PER_PAGE = 8;
 
@@ -52,8 +52,21 @@ public class BookGUI {
         List<BaseComponent[]> pages = new ArrayList<>();
 
         ComponentBuilder currentPage = new ComponentBuilder("");
-        currentPage.append(createLegacy(lang.getMessage("gui.book.reporting_header", Map.of("target", targetPlayer)) + "\n\n"));
-        currentPage.append(createLegacy(lang.getMessage("gui.book.reasons_header", "Reasons:") + "\n"));
+        currentPage.append(
+            createLegacy(
+                player,
+                lang.getMessage(
+                    "gui.book.reporting_header",
+                    Map.of("target", targetPlayer)
+                ) + "\n\n"
+            )
+        );
+        currentPage.append(
+            createLegacy(
+                player,
+                lang.getMessage("gui.book.reasons_header", "Reasons:") + "\n"
+            )
+        );
         int itemsOnPage = 0;
 
         for (String category : categories) {
@@ -64,19 +77,25 @@ public class BookGUI {
             }
 
             TextComponent categoryText = createInteractiveLegacy(
+                player,
                 "&c• " + category,
                 "/report " + targetPlayer + " " + category,
-                lang.getMessage("gui.book.hover_text.report_for", Map.of("category", category))
+                lang.getMessage(
+                    "gui.book.hover_text.report_for",
+                    Map.of("category", category)
+                )
             );
             currentPage.append(categoryText);
 
             if (itemsOnPage < ITEMS_PER_PAGE - 1) {
-                currentPage.append(createLegacy("\n"));
+                currentPage.append(createLegacy(player, "\n"));
             }
             itemsOnPage++;
         }
 
-        if (plugin.getConfig().getBoolean("reports.allow-custom-reasons", true)) {
+        if (
+            plugin.getConfig().getBoolean("reports.allow-custom-reasons", true)
+        ) {
             if (itemsOnPage >= ITEMS_PER_PAGE) {
                 pages.add(currentPage.create());
                 currentPage = new ComponentBuilder("");
@@ -84,9 +103,13 @@ public class BookGUI {
             }
 
             TextComponent customText = createInteractiveLegacy(
+                player,
                 lang.getMessage("gui.book.custom_reason", "&c• Custom Reason"),
                 "/report " + targetPlayer + " custom",
-                lang.getMessage("gui.book.hover_text.custom_reason", "&7Click to provide a custom reason")
+                lang.getMessage(
+                    "gui.book.hover_text.custom_reason",
+                    "&7Click to provide a custom reason"
+                )
             );
             currentPage.append(customText);
             itemsOnPage++;
@@ -114,26 +137,37 @@ public class BookGUI {
         meta.setAuthor("Report System");
 
         ComponentBuilder page = new ComponentBuilder("");
-        page.append(createLegacy(lang.getMessage("gui.book.page.reports_category_header", "&4Reports Category\n\n")));
+        page.append(
+            createLegacy(
+                player,
+                lang.getMessage(
+                    "gui.book.page.reports_category_header",
+                    "&4Reports Category\n\n"
+                )
+            )
+        );
 
         // Pending Reports Button
         TextComponent pendingButton = createInteractiveLegacy(
+            player,
             lang.getMessage("gui.book.main_menu.pending.title"),
             "/reports pending",
             lang.getMessage("gui.book.main_menu.pending.hover")
         );
-        page.append(pendingButton).append(createLegacy("\n\n"));
+        page.append(pendingButton).append(createLegacy(player, "\n\n"));
 
         // Resolved Reports Button
         TextComponent resolvedButton = createInteractiveLegacy(
+            player,
             lang.getMessage("gui.book.main_menu.resolved.title"),
             "/reports resolved",
             lang.getMessage("gui.book.main_menu.resolved.hover")
         );
-        page.append(resolvedButton).append(createLegacy("\n\n"));
+        page.append(resolvedButton).append(createLegacy(player, "\n\n"));
 
         // Rejected Reports Button
         TextComponent rejectedButton = createInteractiveLegacy(
+            player,
             lang.getMessage("gui.book.main_menu.rejected.title"),
             "/reports rejected",
             lang.getMessage("gui.book.main_menu.rejected.hover")
@@ -152,16 +186,26 @@ public class BookGUI {
      */
     public void showReportsByStatus(Player player, Report.ReportStatus status) {
         LanguageManager lang = LanguageManager.get(plugin);
-        List<Report> reports = plugin.getDatabaseManager().getReportsByStatus(status);
+        List<Report> reports = plugin
+            .getDatabaseManager()
+            .getReportsByStatus(status);
         if (reports.isEmpty()) {
-            MessageUtils.sendMessage(player, lang.getMessage("messages.error.no-status-reports", Map.of("status", lang.getLocalizedStatus(status))));
+            MessageUtils.sendMessage(
+                player,
+                lang.getMessage(
+                    "messages.error.no-status-reports",
+                    Map.of("status", lang.getLocalizedStatus(status))
+                )
+            );
             return;
         }
 
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
         BookMeta meta = (BookMeta) book.getItemMeta();
 
-        String formattedStatus = status.name().substring(0, 1) + status.name().substring(1).toLowerCase();
+        String formattedStatus =
+            status.name().substring(0, 1) +
+            status.name().substring(1).toLowerCase();
         meta.setTitle(formattedStatus + " Reports");
         meta.setAuthor("Report System");
 
@@ -172,13 +216,30 @@ public class BookGUI {
         String statusColor = getStatusColor(status);
         String statusName = lang.getLocalizedStatus(status);
         ComponentBuilder currentPage = new ComponentBuilder("");
-        currentPage.append(createLegacy(lang.getMessage("gui.book.report_list.title", Map.of("color", statusColor, "status", statusName))));
-        currentPage.append(createLegacy(lang.getMessage("gui.book.report_list.total", Map.of("total", String.valueOf(reports.size())))));
+        currentPage.append(
+            createLegacy(
+                player,
+                lang.getMessage(
+                    "gui.book.report_list.title",
+                    Map.of("color", statusColor, "status", statusName)
+                )
+            )
+        );
+        currentPage.append(
+            createLegacy(
+                player,
+                lang.getMessage(
+                    "gui.book.report_list.total",
+                    Map.of("total", String.valueOf(reports.size()))
+                )
+            )
+        );
 
         for (Report report : reports) {
             if (itemsOnPage >= ITEMS_PER_PAGE - 1) {
-                currentPage.append(createLegacy("\n\n"));
+                currentPage.append(createLegacy(player, "\n\n"));
                 TextComponent backButton = createInteractiveLegacy(
+                    player,
                     lang.getMessage("gui.book.back_button"),
                     "/reports",
                     lang.getMessage("gui.book.hover_text.back")
@@ -190,25 +251,39 @@ public class BookGUI {
                 itemsOnPage = 0;
             }
 
-            String reportedName = PlayerNameResolver.resolvePlayerName(report.getReported());
+            String reportedName = PlayerNameResolver.resolvePlayerName(
+                report.getReported()
+            );
 
             TextComponent reportEntry = createInteractiveLegacy(
-                lang.getMessage("gui.book.report_list.entry", Map.of(
-                    "index", String.valueOf(reportNumber),
-                    "reported", reportedName != null ? reportedName : lang.getMessage("common.unknown")
-                )),
+                player,
+                lang.getMessage(
+                    "gui.book.report_list.entry",
+                    Map.of(
+                        "index",
+                        String.valueOf(reportNumber),
+                        "reported",
+                        reportedName != null
+                            ? reportedName
+                            : lang.getMessage("common.unknown")
+                    )
+                ),
                 "/viewreport " + report.getId(),
-                lang.getMessage("gui.book.page.view_details", "&7Click to view details")
+                lang.getMessage(
+                    "gui.book.page.view_details",
+                    "&7Click to view details"
+                )
             );
-            currentPage.append(reportEntry).append(createLegacy("\n"));
+            currentPage.append(reportEntry).append(createLegacy(player, "\n"));
 
             itemsOnPage++;
             reportNumber++;
         }
 
         if (itemsOnPage > 0) {
-            currentPage.append(createLegacy("\n\n"));
+            currentPage.append(createLegacy(player, "\n\n"));
             TextComponent backButton = createInteractiveLegacy(
+                player,
                 lang.getMessage("gui.book.back_button"),
                 "/reports",
                 lang.getMessage("gui.book.hover_text.back")
@@ -228,9 +303,14 @@ public class BookGUI {
      */
     public void showPlayerReports(Player player) {
         LanguageManager lang = LanguageManager.get(plugin);
-        List<Report> reports = plugin.getDatabaseManager().getReportsByReporter(player.getUniqueId());
+        List<Report> reports = plugin
+            .getDatabaseManager()
+            .getReportsByReporter(player.getUniqueId());
         if (reports.isEmpty()) {
-            MessageUtils.sendMessage(player, lang.getMessage("messages.error.no-reports"));
+            MessageUtils.sendMessage(
+                player,
+                lang.getMessage("messages.error.no-reports")
+            );
             return;
         }
 
@@ -245,8 +325,21 @@ public class BookGUI {
         int reportNumber = 1;
 
         ComponentBuilder currentPage = new ComponentBuilder("");
-        currentPage.append(createLegacy(lang.getMessage("gui.book.report_list.user_title")));
-        currentPage.append(createLegacy(lang.getMessage("gui.book.report_list.total", Map.of("total", String.valueOf(reports.size())))));
+        currentPage.append(
+            createLegacy(
+                player,
+                lang.getMessage("gui.book.report_list.user_title")
+            )
+        );
+        currentPage.append(
+            createLegacy(
+                player,
+                lang.getMessage(
+                    "gui.book.report_list.total",
+                    Map.of("total", String.valueOf(reports.size()))
+                )
+            )
+        );
 
         for (Report report : reports) {
             if (itemsOnPage >= ITEMS_PER_PAGE - 1) {
@@ -255,20 +348,35 @@ public class BookGUI {
                 itemsOnPage = 0;
             }
 
-            String reportedName = PlayerNameResolver.resolvePlayerName(report.getReported());
+            String reportedName = PlayerNameResolver.resolvePlayerName(
+                report.getReported()
+            );
             String statusColor = getStatusColor(report.getStatus());
 
             TextComponent reportEntry = createInteractiveLegacy(
-                lang.getMessage("gui.book.report_list.user_entry", Map.of(
-                    "index", String.valueOf(reportNumber),
-                    "reported", reportedName != null ? reportedName : lang.getMessage("common.unknown"),
-                    "color", statusColor,
-                    "status", lang.getLocalizedStatus(report.getStatus())
-                )),
+                player,
+                lang.getMessage(
+                    "gui.book.report_list.user_entry",
+                    Map.of(
+                        "index",
+                        String.valueOf(reportNumber),
+                        "reported",
+                        reportedName != null
+                            ? reportedName
+                            : lang.getMessage("common.unknown"),
+                        "color",
+                        statusColor,
+                        "status",
+                        lang.getLocalizedStatus(report.getStatus())
+                    )
+                ),
                 "/viewreport " + report.getId(),
-                lang.getMessage("gui.book.page.view_details", "&7Click to view details")
+                lang.getMessage(
+                    "gui.book.page.view_details",
+                    "&7Click to view details"
+                )
             );
-            currentPage.append(reportEntry).append(createLegacy("\n"));
+            currentPage.append(reportEntry).append(createLegacy(player, "\n"));
 
             itemsOnPage++;
             reportNumber++;
@@ -289,7 +397,10 @@ public class BookGUI {
      * @param report The report to show details for
      */
     public void showReportDetails(Player player, Report report) {
-        String guiType = plugin.getConfig().getString("reports.gui.type", "book").toLowerCase();
+        String guiType = plugin
+            .getConfig()
+            .getString("reports.gui.type", "book")
+            .toLowerCase();
         if (guiType.equals("book")) {
             showReportDetailsBook(player, report);
         } else {
@@ -310,75 +421,162 @@ public class BookGUI {
         meta.setTitle("Report Details");
         meta.setAuthor("Report System");
 
-        String reporterName = report.isAnonymous() ? lang.getMessage("common.anonymous", "Anonymous") :
-            PlayerNameResolver.resolvePlayerName(report.getReporter());
-        String reportedName = PlayerNameResolver.resolvePlayerName(report.getReported());
+        String reporterName = report.isAnonymous()
+            ? lang.getMessage("common.anonymous", "Anonymous")
+            : PlayerNameResolver.resolvePlayerName(report.getReporter());
+        String reportedName = PlayerNameResolver.resolvePlayerName(
+            report.getReported()
+        );
 
         List<BaseComponent> components = new ArrayList<>();
-        components.add(createLegacy(lang.getMessage("gui.book.page.title")));
-        components.add(createLegacy(lang.getMessage("gui.book.page.reporter", Map.of("reporter", reporterName != null ? reporterName : "Unknown"))));
-        components.add(createLegacy(lang.getMessage("gui.book.page.reported", Map.of("reported", reportedName != null ? reportedName : "Unknown"))));
+        components.add(
+            createLegacy(player, lang.getMessage("gui.book.page.title"))
+        );
+        components.add(
+            createLegacy(
+                player,
+                lang.getMessage(
+                    "gui.book.page.reporter",
+                    Map.of(
+                        "reporter",
+                        reporterName != null ? reporterName : "Unknown"
+                    )
+                )
+            )
+        );
+        components.add(
+            createLegacy(
+                player,
+                lang.getMessage(
+                    "gui.book.page.reported",
+                    Map.of(
+                        "reported",
+                        reportedName != null ? reportedName : "Unknown"
+                    )
+                )
+            )
+        );
 
-        components.add(createLegacy(lang.getMessage("gui.book.page.reason")));
+        components.add(
+            createLegacy(player, lang.getMessage("gui.book.page.reason"))
+        );
         TextComponent reasonHover = createInteractiveLegacy(
+            player,
             lang.getMessage("gui.book.page.reason_hover"),
             null,
-            lang.getMessage("gui.book.page.reason_hover_content", Map.of("reason", lang.getLocalizedReason(report.getReason())))
+            lang.getMessage(
+                "gui.book.page.reason_hover_content",
+                Map.of("reason", lang.getLocalizedReason(report.getReason()))
+            )
         );
         components.add(reasonHover);
-        components.add(createLegacy("\n"));
+        components.add(createLegacy(player, "\n"));
 
         String statusColor = getStatusColor(report.getStatus());
         String statusName = lang.getLocalizedStatus(report.getStatus());
-        components.add(createLegacy(lang.getMessage("gui.book.page.status", Map.of("color", statusColor, "status", statusName))));
-        components.add(createLegacy(lang.getMessage("gui.book.page.id", Map.of("id", String.valueOf(report.getId())))));
+        components.add(
+            createLegacy(
+                player,
+                lang.getMessage(
+                    "gui.book.page.status",
+                    Map.of("color", statusColor, "status", statusName)
+                )
+            )
+        );
+        components.add(
+            createLegacy(
+                player,
+                lang.getMessage(
+                    "gui.book.page.id",
+                    Map.of("id", String.valueOf(report.getId()))
+                )
+            )
+        );
 
         if (plugin.getDatabaseManager().hasMultipleServers()) {
             String serverName = report.getServerName();
-            if (serverName == null || serverName.isEmpty()) serverName = lang.getMessage("common.unknown");
-            components.add(createLegacy(lang.getMessage("gui.book.page.server", Map.of("server", serverName))));
+            if (serverName == null || serverName.isEmpty()) serverName =
+                lang.getMessage("common.unknown");
+            components.add(
+                createLegacy(
+                    player,
+                    lang.getMessage(
+                        "gui.book.page.server",
+                        Map.of("server", serverName)
+                    )
+                )
+            );
         } else {
-            components.add(createLegacy("\n"));
+            components.add(createLegacy(player, "\n"));
         }
 
-        components.add(createLegacy("\n"));
+        components.add(createLegacy(player, "\n"));
 
         if (player.hasPermission("aevorinreports.manage")) {
-            components.add(createLegacy(lang.getMessage("gui.book.page.click_to_change")));
+            components.add(
+                createLegacy(
+                    player,
+                    lang.getMessage("gui.book.page.click_to_change")
+                )
+            );
 
             if (report.getStatus() == Report.ReportStatus.PENDING) {
                 TextComponent resolveButton = createInteractiveLegacy(
+                    player,
                     lang.getMessage("gui.book.status_options.resolved"),
                     "/setreportstatus " + report.getId() + " to RESOLVED",
-                    lang.getMessage("gui.book.hover_text.resolved", Map.of("status", lang.getLocalizedStatus(report.getStatus())))
+                    lang.getMessage(
+                        "gui.book.hover_text.resolved",
+                        Map.of(
+                            "status",
+                            lang.getLocalizedStatus(report.getStatus())
+                        )
+                    )
                 );
                 components.add(resolveButton);
 
                 TextComponent rejectButton = createInteractiveLegacy(
+                    player,
                     lang.getMessage("gui.book.status_options.rejected"),
                     "/setreportstatus " + report.getId() + " to REJECTED",
-                    lang.getMessage("gui.book.hover_text.rejected", Map.of("status", lang.getLocalizedStatus(report.getStatus())))
+                    lang.getMessage(
+                        "gui.book.hover_text.rejected",
+                        Map.of(
+                            "status",
+                            lang.getLocalizedStatus(report.getStatus())
+                        )
+                    )
                 );
                 components.add(rejectButton);
             } else {
                 TextComponent pendingButton = createInteractiveLegacy(
+                    player,
                     lang.getMessage("gui.book.status_options.pending"),
                     "/setreportstatus " + report.getId() + " to PENDING",
-                    lang.getMessage("gui.book.hover_text.pending", Map.of("status", lang.getLocalizedStatus(report.getStatus())))
+                    lang.getMessage(
+                        "gui.book.hover_text.pending",
+                        Map.of(
+                            "status",
+                            lang.getLocalizedStatus(report.getStatus())
+                        )
+                    )
                 );
                 components.add(pendingButton);
             }
         }
 
-        components.add(createLegacy("\n"));
+        components.add(createLegacy(player, "\n"));
         TextComponent backButton = createInteractiveLegacy(
+            player,
             lang.getMessage("gui.book.back_button"),
             "/reports " + report.getStatus().toString().toLowerCase(),
             lang.getMessage("gui.book.hover_text.back")
         );
         components.add(backButton);
 
-        BaseComponent[] pageComponents = components.toArray(new BaseComponent[0]);
+        BaseComponent[] pageComponents = components.toArray(
+            new BaseComponent[0]
+        );
         meta.spigot().setPages(pageComponents);
         book.setItemMeta(meta);
         player.openBook(book);
@@ -391,9 +589,18 @@ public class BookGUI {
      */
     private void showReportDetailsChest(Player player, Report report) {
         LanguageManager lang = LanguageManager.get(plugin);
-        Inventory gui = Bukkit.createInventory(null, 54, lang.getMessage("gui.container.manage_report.title", Map.of("id", String.valueOf(report.getId()))));
+        Inventory gui = Bukkit.createInventory(
+            null,
+            54,
+            lang.getMessage(
+                "gui.container.manage_report.title",
+                Map.of("id", String.valueOf(report.getId()))
+            )
+        );
 
-        ItemStack background = new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
+        ItemStack background = new ItemStack(
+            Material.LIGHT_GRAY_STAINED_GLASS_PANE
+        );
         ItemMeta bgMeta = background.getItemMeta();
         if (bgMeta != null) {
             bgMeta.setDisplayName(" ");
@@ -401,36 +608,79 @@ public class BookGUI {
         }
         for (int i = 0; i < 54; i++) gui.setItem(i, background);
 
-        String reporterName = report.isAnonymous() ? lang.getMessage("common.anonymous", "Anonymous") :
-            PlayerNameResolver.resolvePlayerName(report.getReporter());
-        String reportedName = PlayerNameResolver.resolvePlayerName(report.getReported());
-        if (reporterName == null) reporterName = lang.getMessage("common.unknown");
-        if (reportedName == null) reportedName = lang.getMessage("common.unknown");
+        String reporterName = report.isAnonymous()
+            ? lang.getMessage("common.anonymous", "Anonymous")
+            : PlayerNameResolver.resolvePlayerName(report.getReporter());
+        String reportedName = PlayerNameResolver.resolvePlayerName(
+            report.getReported()
+        );
+        if (reporterName == null) reporterName = lang.getMessage(
+            "common.unknown"
+        );
+        if (reportedName == null) reportedName = lang.getMessage(
+            "common.unknown"
+        );
 
         ItemStack info = new ItemStack(Material.ENCHANTED_BOOK);
         ItemMeta infoMeta = info.getItemMeta();
-        infoMeta.setDisplayName(lang.getMessage("gui.container.manage_report.details.title"));
+        infoMeta.setDisplayName(
+            lang.getMessage("gui.container.manage_report.details.title")
+        );
         infoMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         infoMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 
         String serverName = report.getServerName();
-        if (serverName == null || serverName.isEmpty()) serverName = lang.getMessage("common.unknown");
+        if (serverName == null || serverName.isEmpty()) serverName =
+            lang.getMessage("common.unknown");
 
         List<String> lore = new ArrayList<>();
         lore.add(lang.getMessage("gui.container.separator"));
-        lore.add(lang.getMessage("gui.container.manage_report.details.lore.reporter", Map.of("reporter", reporterName)));
-        lore.add(lang.getMessage("gui.container.manage_report.details.lore.reported", Map.of("reported", reportedName)));
-        lore.add(lang.getMessage("gui.container.manage_report.details.lore.reason", Map.of("reason", report.getReason())));
-        lore.add(lang.getMessage("gui.container.manage_report.details.lore.status", Map.of("status", lang.getLocalizedStatus(report.getStatus()))));
-        lore.add(lang.getMessage("gui.container.manage_report.details.lore.id", Map.of("id", String.valueOf(report.getId()))));
+        lore.add(
+            lang.getMessage(
+                "gui.container.manage_report.details.lore.reporter",
+                Map.of("reporter", reporterName)
+            )
+        );
+        lore.add(
+            lang.getMessage(
+                "gui.container.manage_report.details.lore.reported",
+                Map.of("reported", reportedName)
+            )
+        );
+        lore.add(
+            lang.getMessage(
+                "gui.container.manage_report.details.lore.reason",
+                Map.of("reason", report.getReason())
+            )
+        );
+        lore.add(
+            lang.getMessage(
+                "gui.container.manage_report.details.lore.status",
+                Map.of("status", lang.getLocalizedStatus(report.getStatus()))
+            )
+        );
+        lore.add(
+            lang.getMessage(
+                "gui.container.manage_report.details.lore.id",
+                Map.of("id", String.valueOf(report.getId()))
+            )
+        );
 
         if (plugin.getDatabaseManager().hasMultipleServers()) {
-            lore.add(lang.getMessage("gui.container.manage_report.details.lore.server", Map.of("server", serverName)));
+            lore.add(
+                lang.getMessage(
+                    "gui.container.manage_report.details.lore.server",
+                    Map.of("server", serverName)
+                )
+            );
         }
 
         lore.add(lang.getMessage("gui.container.separator"));
         infoMeta.setLore(lore);
-        info.addUnsafeEnchantment(org.bukkit.enchantments.Enchantment.DURABILITY, 1);
+        info.addUnsafeEnchantment(
+            org.bukkit.enchantments.Enchantment.DURABILITY,
+            1
+        );
         info.setItemMeta(infoMeta);
 
         gui.setItem(22, info);
@@ -441,48 +691,95 @@ public class BookGUI {
             glassMeta.setDisplayName(" ");
             glass.setItemMeta(glassMeta);
         }
-        for (int slot : new int[]{12, 13, 14, 21, 23, 30, 31, 32}) gui.setItem(slot, glass);
+        for (int slot : new int[] { 12, 13, 14, 21, 23, 30, 31, 32 })
+            gui.setItem(slot, glass);
 
         if (player.hasPermission("aevorinreports.manage")) {
             if (report.getStatus() != Report.ReportStatus.PENDING) {
                 ItemStack pending = new ItemStack(Material.HOPPER);
                 ItemMeta pendingMeta = pending.getItemMeta();
-                pendingMeta.setDisplayName(lang.getMessage("gui.container.manage_report.pending.title"));
-                pendingMeta.setLore(List.of(
-                    lang.getMessage("gui.container.separator"),
-                    lang.getMessage("gui.container.manage_report.pending.lore.description"),
-                    lang.getMessage("gui.container.manage_report.pending.lore.current_status", Map.of("status", lang.getLocalizedStatus(report.getStatus()))),
-                    lang.getMessage("gui.container.separator"),
-                    lang.getMessage("gui.container.manage_report.pending.lore.action")
-                ));
+                pendingMeta.setDisplayName(
+                    lang.getMessage("gui.container.manage_report.pending.title")
+                );
+                pendingMeta.setLore(
+                    List.of(
+                        lang.getMessage("gui.container.separator"),
+                        lang.getMessage(
+                            "gui.container.manage_report.pending.lore.description"
+                        ),
+                        lang.getMessage(
+                            "gui.container.manage_report.pending.lore.current_status",
+                            Map.of(
+                                "status",
+                                lang.getLocalizedStatus(report.getStatus())
+                            )
+                        ),
+                        lang.getMessage("gui.container.separator"),
+                        lang.getMessage(
+                            "gui.container.manage_report.pending.lore.action"
+                        )
+                    )
+                );
                 pending.setItemMeta(pendingMeta);
                 gui.setItem(45, pending);
             }
             if (report.getStatus() != Report.ReportStatus.RESOLVED) {
                 ItemStack resolved = new ItemStack(Material.EMERALD_BLOCK);
                 ItemMeta resolvedMeta = resolved.getItemMeta();
-                resolvedMeta.setDisplayName(lang.getMessage("gui.container.manage_report.resolved.title"));
-                resolvedMeta.setLore(List.of(
-                    lang.getMessage("gui.container.separator"),
-                    lang.getMessage("gui.container.manage_report.resolved.lore.description"),
-                    lang.getMessage("gui.container.manage_report.resolved.lore.current_status", Map.of("status", lang.getLocalizedStatus(report.getStatus()))),
-                    lang.getMessage("gui.container.separator"),
-                    lang.getMessage("gui.container.manage_report.resolved.lore.action")
-                ));
+                resolvedMeta.setDisplayName(
+                    lang.getMessage(
+                        "gui.container.manage_report.resolved.title"
+                    )
+                );
+                resolvedMeta.setLore(
+                    List.of(
+                        lang.getMessage("gui.container.separator"),
+                        lang.getMessage(
+                            "gui.container.manage_report.resolved.lore.description"
+                        ),
+                        lang.getMessage(
+                            "gui.container.manage_report.resolved.lore.current_status",
+                            Map.of(
+                                "status",
+                                lang.getLocalizedStatus(report.getStatus())
+                            )
+                        ),
+                        lang.getMessage("gui.container.separator"),
+                        lang.getMessage(
+                            "gui.container.manage_report.resolved.lore.action"
+                        )
+                    )
+                );
                 resolved.setItemMeta(resolvedMeta);
                 gui.setItem(49, resolved);
             }
             if (report.getStatus() != Report.ReportStatus.REJECTED) {
                 ItemStack rejected = new ItemStack(Material.BARRIER);
                 ItemMeta rejectedMeta = rejected.getItemMeta();
-                rejectedMeta.setDisplayName(lang.getMessage("gui.container.manage_report.rejected.title"));
-                rejectedMeta.setLore(List.of(
-                    lang.getMessage("gui.container.separator"),
-                    lang.getMessage("gui.container.manage_report.rejected.lore.description"),
-                    lang.getMessage("gui.container.manage_report.rejected.lore.current_status", Map.of("status", lang.getLocalizedStatus(report.getStatus()))),
-                    lang.getMessage("gui.container.separator"),
-                    lang.getMessage("gui.container.manage_report.rejected.lore.action")
-                ));
+                rejectedMeta.setDisplayName(
+                    lang.getMessage(
+                        "gui.container.manage_report.rejected.title"
+                    )
+                );
+                rejectedMeta.setLore(
+                    List.of(
+                        lang.getMessage("gui.container.separator"),
+                        lang.getMessage(
+                            "gui.container.manage_report.rejected.lore.description"
+                        ),
+                        lang.getMessage(
+                            "gui.container.manage_report.rejected.lore.current_status",
+                            Map.of(
+                                "status",
+                                lang.getLocalizedStatus(report.getStatus())
+                            )
+                        ),
+                        lang.getMessage("gui.container.separator"),
+                        lang.getMessage(
+                            "gui.container.manage_report.rejected.lore.action"
+                        )
+                    )
+                );
                 rejected.setItemMeta(rejectedMeta);
                 gui.setItem(53, rejected);
             }
@@ -499,21 +796,45 @@ public class BookGUI {
         };
     }
 
-    private TextComponent createLegacy(String text) {
+    private TextComponent createLegacy(Player player, String text) {
+        text = MessageUtils.parsePlaceholders(player, text);
         TextComponent parent = new TextComponent("");
-        for (net.md_5.bungee.api.chat.BaseComponent c : net.md_5.bungee.api.chat.TextComponent.fromLegacyText(org.bukkit.ChatColor.translateAlternateColorCodes('&', text))) {
+        for (net.md_5.bungee.api.chat.BaseComponent c : net.md_5.bungee.api.chat.TextComponent.fromLegacyText(
+            org.bukkit.ChatColor.translateAlternateColorCodes('&', text)
+        )) {
             parent.addExtra(c);
         }
         return parent;
     }
 
-    private TextComponent createInteractiveLegacy(String text, String command, String hoverText) {
-        TextComponent parent = createLegacy(text);
+    private TextComponent createInteractiveLegacy(
+        Player player,
+        String text,
+        String command,
+        String hoverText
+    ) {
+        TextComponent parent = createLegacy(player, text);
         if (command != null) {
-            parent.setClickEvent(new net.md_5.bungee.api.chat.ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND, command));
+            parent.setClickEvent(
+                new net.md_5.bungee.api.chat.ClickEvent(
+                    net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND,
+                    command
+                )
+            );
         }
         if (hoverText != null) {
-            parent.setHoverEvent(new net.md_5.bungee.api.chat.HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT, net.md_5.bungee.api.chat.TextComponent.fromLegacyText(org.bukkit.ChatColor.translateAlternateColorCodes('&', hoverText))));
+            hoverText = MessageUtils.parsePlaceholders(player, hoverText);
+            parent.setHoverEvent(
+                new net.md_5.bungee.api.chat.HoverEvent(
+                    net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT,
+                    net.md_5.bungee.api.chat.TextComponent.fromLegacyText(
+                        org.bukkit.ChatColor.translateAlternateColorCodes(
+                            '&',
+                            hoverText
+                        )
+                    )
+                )
+            );
         }
         return parent;
     }

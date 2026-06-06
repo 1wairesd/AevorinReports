@@ -31,6 +31,7 @@ AevorinReports is a modern, robust reporting system designed for Minecraft serve
 - **Database Support** – SQLite (local) and MySQL (network-wide synchronization)
 - **Optimized Performance** – Asynchronous processing and intelligent caching
 - **Full Localization Support** – Built-in multi-language system with support for custom language packs
+- **PlaceholderAPI Support** – Provides report statistic placeholders documented on the [PlaceholderAPI wiki](https://wiki.placeholderapi.com/users/placeholder-list/minecraft/#aevorinreports)
 - **bStats & FastStats Integration** – Anonymous usage statistics and advanced telemetry for development insights
 
 ---
@@ -332,6 +333,8 @@ messages:
 - Fully customizable messages.
 - Supports color codes (`&`) and placeholders.
 - MiniMessage is supported where applicable.
+- PlaceholderAPI placeholders can be used in supported GUI text, including book GUI text and container GUI titles, item names, and lore.
+- See the official [AevorinReports PlaceholderAPI placeholder list](https://wiki.placeholderapi.com/users/placeholder-list/minecraft/#aevorinreports).
 
 ---
 

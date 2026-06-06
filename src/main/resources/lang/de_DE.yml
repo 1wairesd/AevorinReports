@@ -1,0 +1,238 @@
+# Verfügbare Platzhalter (Nicht alle Platzhalter funktionieren in jeder Nachricht):
+# {reporter} - Der Name des Spielers, der die Meldung erstellt hat
+# {reported} - Der Name des gemeldeten Spielers
+# {target}   - Der Zielspieler (oft identisch mit {reported})
+# {reason}   - Der für die Meldung angegebene Grund
+# {status}   - Der aktuelle Status der Meldung (z. B. Offen, Gelöst)
+# {color}    - Der Farbcodes des Meldungs-Status
+# {id}       - Die eindeutige numerische ID der Meldung
+# {server}   - Der Server, auf dem die Meldung erstellt wurde
+# {index}    - Der Nummerierungsindex in Listen
+# {total}    - Gesamtzahl der Meldungen, Seiten oder Elemente
+# {page}     - Aktuelle Seitenzahl in einer GUI
+# {start}    - Startindex eines Elements auf einer Seite
+# {end}      - Endindex eines Elements auf einer Seite
+# {category} - Der Name der Meldungskategorie
+# {time}     - Verbleibende Abklingzeit
+# {date}     - Datum und Uhrzeit, wann die Meldung erstellt wurde
+#
+# Unterstützt MiniMessage-Tags (z. B. <rainbow>, <red>, <gradient:blue:aqua>)
+# Legacy- & Codes werden ebenfalls unterstützt.
+
+config-version: 2
+
+# GUI-Oberflächeneinstellungen
+# Enthält sämtliche Textformatierungen für die interaktiven GUIs des Meldungs-Plugins.
+gui:
+  # Buch-GUI
+  # Wird verwendet, wenn gui.type in config.yml auf "book" gesetzt ist.
+  # Hinweis: Verwende '\n', um neue Zeilen in Büchern zu erzeugen!
+  book:
+    error_creating: "&cFehler beim Erstellen der Buchoberfläche."
+    reporting_header: "&4Spieler melden:\n&c{target}"
+    reasons_header: "&4Gründe:"
+    custom_reason: "&c• Eigener Grund"
+    back_button: "\n&8« Zurück zu den Kategorien"
+    page:
+      title: "&cMeldungsdetails\n\n"
+      reporter: "&7Meldender: &a{reporter}\n"
+      reported: "&7Gemeldet: &c{reported}\n"
+      reason: "&7Grund: "
+      reason_hover: "&cZum Anzeigen fahren"
+      reason_hover_content: "&f{reason}"
+      status: "&7Status: {color}{status}\n"
+      id: "&7ID: &0{id}"
+      server: "&7Server: &c{server}\n"
+      click_to_change: "\n&8Klicke, um den Status zu ändern\n"
+      reports_category_header: "&4Meldungskategorie\n\n"
+      view_details: "&7Klicke, um Einzelheiten anzuzeigen"
+    status_options:
+      pending: "&6⚠ Als offen setzen\n"
+      resolved: "&a✔ Als gelöst markieren\n"
+      rejected: "&c✘ Als abgelehnt markieren\n"
+    hover_text:
+      report_for: "&7Klicke, um für Folgendes zu melden: &f{category}"
+      custom_reason: "&7Klicke, um einen eigenen Grund anzugeben"
+      pending: "&7Klicke, um zu offen zurückzukehren"
+      resolved: "&7Klicke, um als gelöst zu markieren"
+      rejected: "&7Klicke, um als abgelehnt zu markieren"
+      back: "&7Klicke, um zu den Meldungskategorien zurückzukehren"
+    main_menu:
+      pending:
+        title: "&6• Offene Meldungen"
+        hover: "&7Klicke, um anzuzeigen"
+      resolved:
+        title: "&a• Gelöste Meldungen"
+        hover: "&7Klicke, um anzuzeigen"
+      rejected:
+        title: "&c• Abgelehnte Meldungen"
+        hover: "&7Klicke, um anzuzeigen"
+    report_list:
+      title: "&4{status}-Meldungen\n"
+      total: "&7Gesamt: {total}\n\n"
+      entry: "&4{index}. &c{reported}"
+      user_title: "&4Deine Meldungen\n"
+      user_entry: "&4{index}. &c{reported} {color}({status})"
+
+  # Container-GUI (Truhenoberfläche)
+  # Wird verwendet, wenn gui.type in config.yml auf "container" gesetzt ist.
+  container:
+    shared:
+      separator: "&8&m                                          &r"
+      navigation:
+        page_indicator:
+          title: "&fSeite {page} von {total}"
+          lore: "&7Zeigt die Meldungen {start}-{end} von {total} an"
+        previous_page:
+          title: "&eVorherige Seite"
+          lore: "&7Zu Seite {page} wechseln"
+        next_page:
+          title: "&eNächste Seite"
+          lore: "&7Zu Seite {page} wechseln"
+        back_button:
+          title: "&eZurück"
+          lore: "&7Zurück zu den Kategorien"
+
+    menus:
+      main_menu:
+        title: "Meldungsmenü"
+        pending:
+          title: "&6Offene Meldungen"
+          lore:
+            description: "&7Alle offenen Meldungen anzeigen."
+            action: "&eKlicke, um sie anzusehen!"
+        resolved:
+          title: "&aGelöste Meldungen"
+          lore:
+            description: "&7Alle gelösten Meldungen anzeigen."
+            action: "&eKlicke, um sie anzusehen!"
+        rejected:
+          title: "&cAbgelehnte Meldungen"
+          lore:
+            description: "&7Alle abgelehnten Meldungen anzeigen."
+            action: "&eKlicke, um sie anzusehen!"
+
+      category_view:
+        title: "{status}-Meldungen"
+        report_item:
+          title: "<gradient:#AFA3FF:#AFA3FF>{reporter}</gradient> <grey>→ <gradient:#FF0000:#FF0000>{reported}</gradient>"
+          lore:
+            reason: "<gradient:#AFA3FF:#AFA3FF>Grund:</gradient> <white>{reason}</white>"
+            status: "<gradient:#AFA3FF:#AFA3FF>Status:</gradient> <white>{status}</white>"
+            id: "<gradient:#AFA3FF:#AFA3FF>ID:</gradient> <white>{id}</white>"
+            server: "<gradient:#AFA3FF:#AFA3FF>Server:</gradient> <white>{server}</white>"
+            action: "<gradient:#FF0000:#FF0000>Klicke zur Verwaltung</gradient>"
+
+      player_reports:
+        title: "Deine Meldungen"
+
+      reason_selector:
+        title: "Meldung: {target}"
+        info_icon:
+          title: "<gradient:#AFA3FF:#AFA3FF>Melden:</gradient> <white>{target}</white>"
+          lore:
+            - ""
+            - "&fWähle einen Grund aus, um diesen Spieler zu melden"
+            - "&fKlicke auf ein Symbol, um deine Meldung einzureichen"
+            - ""
+        reason_item:
+          title: "<gradient:#AFA3FF:#AFA3FF>{reason}</gradient>"
+          lore:
+            target: " "
+            action: "&aKlicke, um die Meldung einzureichen"
+        custom_reason_item:
+          title: "&cEigener Grund"
+          lore: "&7Klicke, um einen eigenen Grund einzugeben"
+
+    manage_report:
+      title: "Meldung verwalten {id}"
+      back_button:
+        title: "&cZurück"
+        lore: "&7Zurück zu den {status}-Meldungen"
+      details:
+        title: "<gradient:#AFA3FF:#AFA3FF>Meldungsdetails</gradient>"
+        lore:
+          reporter: "<gradient:#AFA3FF:#AFA3FF>Meldender:</gradient> <white>{reporter}</white>"
+          reported: "<gradient:#AFA3FF:#AFA3FF>Gemeldet:</gradient> <white>{reported}</white>"
+          reason: "<gradient:#AFA3FF:#AFA3FF>Grund:</gradient> <white>{reason}</white>"
+          status: "<gradient:#AFA3FF:#AFA3FF>Status:</gradient> <white>{status}</white>"
+          id: "<gradient:#AFA3FF:#AFA3FF>ID:</gradient> <white>{id}</white>"
+          server: "<gradient:#AFA3FF:#AFA3FF>Server:</gradient> <white>{server}</white>"
+      pending:
+        title: "&6Zu offen verschieben"
+        lore:
+          description: "&7Diese Meldung zur Prüfung auf offen setzen."
+          current_status: "&7Aktueller Status: &f{status}"
+          action: "&6Klicke, um den Status zu ändern"
+      resolved:
+        title: "&aZu gelöst verschieben"
+        lore:
+          description: "&7Diese Meldung als gelöst markieren."
+          current_status: "&7Aktueller Status: &f{status}"
+          action: "&aKlicke, um den Status zu ändern"
+      rejected:
+        title: "&cZu abgelehnt verschieben"
+        lore:
+          description: "&7Diese Meldung als ungültig ablehnen."
+          current_status: "&7Aktueller Status: &f{status}"
+          action: "&cKlicke, um den Status zu ändern"
+
+# Gemeinsame Texte
+# Gemeinsame Textelemente, Status und Standard-Reportgründe.
+common:
+  unknown: "Unbekannt"
+  anonymous: "Anonym"
+  status:
+    pending: "Offen"
+    resolved: "Gelöst"
+    rejected: "Abgelehnt"
+  reasons:
+    - "Hacken/Cheaten"
+    - "Belästigung/Mobbing"
+    - "Spam/Werbung"
+    - "Griefing/Vandalismus"
+    - "Ausnutzen von Bugs"
+    - "Unangemessene Skin/Name"
+    - "Unangemessene Sprache"
+    - "Sonstiges"
+
+# Chat-Nachrichten
+# Direkte Benachrichtigungen, Fehler- und Erfolgsmeldungen, die an Spieler
+# oder Teammitglieder im normalen Minecraft-Chat gesendet werden.
+messages:
+  # Das Präfix, das vor den meisten Plugin-Nachrichten angezeigt wird
+  prefix: "<gradient:#AFA3FF:#AFA3FF>Meldungen</gradient> <grey>➡</grey>"
+
+  error:
+    no-permission: "{prefix} &cDafür hast du keine Berechtigung!"
+    player-only: "{prefix} &cNur Spieler können diesen Befehl benutzen!"
+    invalid-player: "{prefix} &cDieser Spieler existiert nicht!"
+    invalid-group: "{prefix} &cUngültige Meldungs-Statusgruppe."
+    report-not-found: "{prefix} &cMeldung nicht gefunden!"
+    no-reports: "{prefix} &cDu hast keine aktiven Meldungen!"
+    no-status-reports: "{prefix} &cKeine {status}-Meldungen gefunden."
+    status-invalid: "{prefix} &cUngültiger Meldungs-Status! Verfügbare Status: {statuses}"
+    category-invalid: "{prefix} &cUngültige Meldungs-Kategorie! Verfügbare Kategorien: {categories}"
+    custom-reason-disabled: "{prefix} &cEigene Gründe sind derzeit deaktiviert."
+    custom-reason-too-short: "{prefix} &cDein eigener Grund ist zu kurz! Mindestlänge: {min} Zeichen"
+    custom-reason-too-long: "{prefix} &cDein eigener Grund ist zu lang! Maximale Länge: {max} Zeichen"
+    usage-report: "&cVerwendung: /report <Spieler> [Grund]"
+    usage-viewreport: "&cVerwendung: /viewreport <id>"
+    usage-setstatus: "&cVerwendung: /setreportstatus <id> zu <status>"
+    invalid-report-id: "&cUngültige Meldungs-ID!"
+    status-already-set: "&cDie Meldung ist bereits in diesem Status!"
+    cannot-report-self: "&cDu kannst dich nicht selbst melden."
+
+  success:
+    report-created: "{prefix} &aDeine Meldung wurde erfolgreich eingereicht!"
+
+  report:
+    cooldown: "{prefix} &cDu musst noch {time} warten, bevor du eine weitere Meldung einreichen kannst."
+    limit-reached: "{prefix} &cDu hast die maximale Anzahl aktiver Meldungen erreicht."
+    notification: "{prefix} <gradient:#BEFF00:#D2FF00>{reporter}</gradient> &fhat <gradient:#FF0000:#FF003E>{reported}</gradient> &fwegen Folgendem gemeldet: <gradient:#00B7FF:#0098FF>{category}</gradient>"
+    status-change: "{prefix} &7Der Status von Meldung #{id} wurde zu {color}{status}&7 geändert."
+    custom-reason-prompt: "{prefix} &fGib deinen eigenen Grund im Chat ein. Deine Nachricht bleibt privat."
+
+  admin:
+    reload-success: "{prefix} &aKonfiguration erfolgreich neu geladen!"
+    reload-failure: "{prefix} &cDie Konfiguration konnte nicht neu geladen werden. Prüfe die Konsole."

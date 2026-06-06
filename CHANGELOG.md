@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - N/A
+
+### Improvements & Bug Fixes
+
+- Added German language support.
+- PlaceholderAPI placeholders are now parsed in built-in GUI text, including book GUI text and container GUI titles, item names, and lore.
+  - This allows placeholders such as `%reports_total_pending%` to display live values in configured GUI text.
+
+### Contributors
+
+We are looking for translators to add even more language support to AevorinReports! Join our [Discord server](https://discord.gg/SV2dXt5SwF) and open a ticket if you'd like to help!
+
 ## [1.0.9.1] - 2026-06-05
 
 ### Improvements & Bug Fixes
