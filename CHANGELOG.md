@@ -7,8 +7,14 @@ All notable changes to this project will be documented in this file.
 ### Improvements & Bug Fixes
 
 - Added German language support.
+- Added support for reporting offline players who have played on the server before.
+  - `/report <player>` now resolves targets through Bukkit `OfflinePlayer`, allowing reports against cached offline players while still rejecting unknown players.
+  - Added `reports.allow-offline-player-reporting` to `config.yml`, defaulting to `true`, so servers can disable offline-player reporting if desired.
+  - Report creation now stores the resolved offline player's UUID and keeps custom-reason and GUI report flows working with offline targets.
+  - Report command tab completion now includes cached offline players in addition to online players when offline-player reporting is enabled.
 - PlaceholderAPI placeholders are now parsed in built-in GUI text, including book GUI text and container GUI titles, item names, and lore.
   - This allows placeholders such as `%reports_total_pending%` to display live values in configured GUI text.
+- Cleaned up Java imports in the language manager for improved readability.
 
 ### Contributors
 

@@ -7,12 +7,12 @@ import dev.aevorinstudios.aevorinReports.gui.ReportReasonContainerGUI;
 import dev.aevorinstudios.aevorinReports.reports.Report;
 import dev.aevorinstudios.aevorinReports.config.LanguageManager;
 import dev.aevorinstudios.aevorinReports.utils.MessageUtils;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import net.md_5.bungee.api.ChatColor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -49,16 +49,19 @@ public class BukkitReportCommand implements CommandExecutor, TabCompleter {
         }
 
         String targetPlayer = args[0];
-        Player target = plugin.getServer().getPlayer(targetPlayer);
+        OfflinePlayer target = plugin.getServer().getOfflinePlayer(targetPlayer);
+        boolean allowOfflinePlayerReporting = plugin.getConfig().getBoolean("reports.allow-offline-player-reporting", true);
 
-        if (target == null) {
+        if ((!allowOfflinePlayerReporting && !target.isOnline()) || (!target.isOnline() && !target.hasPlayedBefore())) {
             MessageUtils.sendMessage(player, lang.getMessage("messages.error.invalid-player"));
             return true;
         }
 
+        String targetName = target.getName() != null ? target.getName() : targetPlayer;
+
         // Self-reporting check
         boolean allowSelfReporting = plugin.getConfig().getBoolean("reports.allow-self-reporting", false);
-        if (!allowSelfReporting && player.getName().equalsIgnoreCase(targetPlayer)) {
+        if (!allowSelfReporting && player.getUniqueId().equals(target.getUniqueId())) {
             dev.aevorinstudios.aevorinReports.utils.MessageUtils.sendMessage(player, lang.getMessage("messages.error.cannot-report-self"));
             return true;
         }
@@ -101,7 +104,7 @@ public class BukkitReportCommand implements CommandExecutor, TabCompleter {
                     return true;
                 }
 
-                plugin.getCustomReasonHandler().startCustomReason(player, targetPlayer);
+                plugin.getCustomReasonHandler().startCustomReason(player, targetName);
                 MessageUtils.sendMessage(player, lang.getMessage("messages.report.custom-reason-prompt"));
                 return true;
             }
@@ -137,12 +140,12 @@ public class BukkitReportCommand implements CommandExecutor, TabCompleter {
                 }
             }
 
-            createReport(player, targetPlayer, reason);
+            createReport(player, targetName, reason);
             return true;
         }
 
         // If no reason provided, show GUI
-        showReportCategories(player, target.getName());
+        showReportCategories(player, targetName);
         return true;
     }
 
@@ -159,6 +162,15 @@ public class BukkitReportCommand implements CommandExecutor, TabCompleter {
             for (Player player : plugin.getServer().getOnlinePlayers()) {
                 if (player.getName().toLowerCase().startsWith(partialName)) {
                     playerNames.add(player.getName());
+                }
+            }
+
+            if (plugin.getConfig().getBoolean("reports.allow-offline-player-reporting", true)) {
+                for (OfflinePlayer offlinePlayer : plugin.getServer().getOfflinePlayers()) {
+                    String name = offlinePlayer.getName();
+                    if (name != null && name.toLowerCase().startsWith(partialName) && !playerNames.contains(name)) {
+                        playerNames.add(name);
+                    }
                 }
             }
 

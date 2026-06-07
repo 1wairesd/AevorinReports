@@ -132,6 +132,7 @@ public class ConfigManager {
                 config.getReports().setLogInventory(asBoolean(reports.get("logInventory"), true));
                 config.getReports().setLogLocation(asBoolean(reports.get("logLocation"), true));
                 config.getReports().setAllowSelfReporting(asBoolean(reports.get("allow-self-reporting"), false));
+                config.getReports().setAllowOfflinePlayerReporting(asBoolean(reports.get("allow-offline-player-reporting"), true));
 
                 if (reports.containsKey("gui")) {
                     Map<String, Object> gui = (Map<String, Object>) reports.get("gui");
@@ -585,6 +586,7 @@ public class ConfigManager {
         reports.put("chat-history-lines", config.getReports().getChatHistoryLines());
         reports.put("logInventory", config.getReports().isLogInventory());
         reports.put("logLocation", config.getReports().isLogLocation());
+        reports.put("allow-offline-player-reporting", config.getReports().isAllowOfflinePlayerReporting());
         result.put("reports", reports);
 
         // Notifications Configuration
@@ -746,7 +748,7 @@ public class ConfigManager {
     @Data
     public static class Config {
         private String serverName = "survival";
-        private int configVersion = 5;
+        private int configVersion = 6;
         private DatabaseConfig database = new DatabaseConfig();
         private ReportsConfig reports = new ReportsConfig();
         private NotificationsConfig notifications = new NotificationsConfig();
@@ -823,6 +825,7 @@ public class ConfigManager {
             private boolean logInventory = true;
             private boolean logLocation = true;
             private boolean allowSelfReporting = false;
+            private boolean allowOfflinePlayerReporting = true;
             private GUIConfig gui = new GUIConfig();
             private List<String> categories = new ArrayList<>(Arrays.asList("Hacking/Cheating", "Harassment/Bullying", "Spam/Advertisement", "Griefing/Vandalism", "Bug Exploit", "Other"));
 

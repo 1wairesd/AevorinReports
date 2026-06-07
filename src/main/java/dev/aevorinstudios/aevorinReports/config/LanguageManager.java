@@ -1,13 +1,18 @@
 package dev.aevorinstudios.aevorinReports.config;
 
+import dev.aevorinstudios.aevorinReports.reports.Report.ReportStatus;
+import dev.aevorinstudios.aevorinReports.utils.MessageUtils;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -23,15 +28,15 @@ public class LanguageManager {
         new HashMap<>();
 
     // List of officially supported languages bundled within the plugin jar
-    private static final java.util.List<String> SUPPORTED_LANGUAGES =
-        java.util.Arrays.asList(
-            "en_US",
-            "it_IT",
-            "sk_SK",
-            "pl_PL",
-            "zh_CN",
-            "de_DE"
-        );
+    private static final List<String> SUPPORTED_LANGUAGES = Arrays.asList(
+        "en_US",
+        "it_IT",
+        "sk_SK",
+        "pl_PL",
+        "zh_CN",
+        "de_DE",
+        "nl_NL"
+    );
 
     private LanguageManager(Plugin plugin, String langName) {
         this.plugin = plugin;
@@ -139,8 +144,7 @@ public class LanguageManager {
                     );
 
                 // Detect missing keys
-                java.util.List<String> missingKeys =
-                    new java.util.ArrayList<>();
+                List<String> missingKeys = new ArrayList<>();
                 for (String key : fallbackConfig.getKeys(true)) {
                     if (
                         !fallbackConfig.isConfigurationSection(key) &&
@@ -181,9 +185,7 @@ public class LanguageManager {
     }
 
     public String getMessage(String path) {
-        return dev.aevorinstudios.aevorinReports.utils.MessageUtils.parseToLegacy(
-            getRawMessage(path)
-        );
+        return MessageUtils.parseToLegacy(getRawMessage(path));
     }
 
     public String getMessage(String path, String defaultValue) {
@@ -195,9 +197,7 @@ public class LanguageManager {
             );
             msg = msg.replace("{prefix}", prefix);
         }
-        return dev.aevorinstudios.aevorinReports.utils.MessageUtils.parseToLegacy(
-            msg
-        );
+        return MessageUtils.parseToLegacy(msg);
     }
 
     public String getMessage(String path, Map<String, String> placeholders) {
@@ -208,47 +208,39 @@ public class LanguageManager {
                 entry.getValue()
             );
         }
-        return dev.aevorinstudios.aevorinReports.utils.MessageUtils.parseToLegacy(
-            message
-        );
+        return MessageUtils.parseToLegacy(message);
     }
 
-    public java.util.List<String> getMessageList(String path) {
-        java.util.List<String> list = langConfig.getStringList(path);
+    public List<String> getMessageList(String path) {
+        List<String> list = langConfig.getStringList(path);
         if (list.isEmpty()) {
-            return java.util.Collections.singletonList(
-                "Missing lang list: " + path
-            );
+            return Collections.singletonList("Missing lang list: " + path);
         }
         String prefix = langConfig.getString(
             "messages.prefix",
             "&8[&bAevorinReports&8]&r "
         );
-        java.util.List<String> parsedList = new java.util.ArrayList<>();
+        List<String> parsedList = new ArrayList<>();
         for (String s : list) {
             String msg = s;
             if (!path.equals("messages.prefix") && msg.contains("{prefix}")) {
                 msg = msg.replace("{prefix}", prefix);
             }
-            parsedList.add(
-                dev.aevorinstudios.aevorinReports.utils.MessageUtils.parseToLegacy(
-                    msg
-                )
-            );
+            parsedList.add(MessageUtils.parseToLegacy(msg));
         }
         return parsedList;
     }
 
-    public java.util.List<String> getMessageList(
+    public List<String> getMessageList(
         String path,
         Map<String, String> placeholders
     ) {
-        java.util.List<String> list = langConfig.getStringList(path);
+        List<String> list = langConfig.getStringList(path);
         String prefix = langConfig.getString(
             "messages.prefix",
             "&8[&bAevorinReports&8]&r "
         );
-        java.util.List<String> replacedList = new java.util.ArrayList<>();
+        List<String> replacedList = new ArrayList<>();
         for (String s : list) {
             String replaced = s;
             if (
@@ -262,18 +254,12 @@ public class LanguageManager {
                     entry.getValue()
                 );
             }
-            replacedList.add(
-                dev.aevorinstudios.aevorinReports.utils.MessageUtils.parseToLegacy(
-                    replaced
-                )
-            );
+            replacedList.add(MessageUtils.parseToLegacy(replaced));
         }
         return replacedList;
     }
 
-    public String getLocalizedStatus(
-        dev.aevorinstudios.aevorinReports.reports.Report.ReportStatus status
-    ) {
+    public String getLocalizedStatus(ReportStatus status) {
         return getMessage(
             "common.status." + status.name().toLowerCase(),
             status.name()
@@ -288,7 +274,7 @@ public class LanguageManager {
         return getMessage("messages.prefix", "&8[&bAevorinReports&8]&r ");
     }
 
-    public java.util.List<String> getReasonList() {
+    public List<String> getReasonList() {
         return getMessageList("common.reasons");
     }
 }
