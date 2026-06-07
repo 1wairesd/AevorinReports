@@ -1,0 +1,238 @@
+# Beschikbare Placeholders (Niet alle placeholders werken in elk bericht):
+# {reporter} - De naam van de speler die de speler heeft gerapporteerd
+# {reported} - De naam van de speler die gerapporteerd werd
+# {target}   - De doelspeler (vaak dezelfde als de gemelde speler)
+# {reason}   - De opgegeven reden voor het rapport
+# {status}   - De huidige status van de rapportage (bijv. In behandeling, Opgelost)
+# {color}    - De kleurcode die hoort bij de status van de rapportage
+# {id}       - Het unieke numerieke ID van de rapportage
+# {server}   - De server waar de rapportage is gemaakt
+# {index}    - De nummering in lijsten
+# {total}    - Totaal aantal rapportages, pagina's of items
+# {page}     - Huidig paginanummer in een GUI
+# {start}    - Startitem index op een pagina
+# {end}      - Einditem index op een pagina
+# {category} - De naam van de rapportagecategorie
+# {time}     - Resterende afkoeltijd
+# {date}     - Datum en tijd waarop de rapportage is gemaakt
+#
+# Ondersteunt MiniMessage tags (bijv. <rainbow>, <red>, <gradient:blue:aqua>)
+# Legacy & codes worden ook ondersteund.
+
+config-version: 2
+
+# GUI interface instellingen
+# Bevat alle tekstformattering voor de interactieve GUI's van de plugin.
+gui:
+  # Boek GUI
+  # Wordt gebruikt wanneer gui.type is ingesteld op "book" in het config.yml bestand.
+  # Let op: Gebruik '\n' om nieuwe regels te maken in boeken!
+  book:
+    error_creating: "&cFout bij het aanmaken van de boekinterface."
+    reporting_header: "&4Speler rapporteren:\n&c{target}"
+    reasons_header: "&4Redenen:"
+    custom_reason: "&c• Eigen reden"
+    back_button: "\n&8« Terug naar categorieën"
+    page:
+      title: "&cRapportdetails\n\n"
+      reporter: "&7Melder: &a{reporter}\n"
+      reported: "&7Gemeld: &c{reported}\n"
+      reason: "&7Reden: "
+      reason_hover: "&cBeweeg hierover met je muis."
+      reason_hover_content: "&f{reason}"
+      status: "&7Status: {color}{status}\n"
+      id: "&7ID: &0{id}"
+      server: "&7Server: &c{server}\n"
+      click_to_change: "\n&8Klik om status te wijzigen\n"
+      reports_category_header: "&4Rapportagecategorie\n\n"
+      view_details: "&7Klik om details te bekijken"
+    status_options:
+      pending: "&6⚠ Markeer als In behandeling\n"
+      resolved: "&a✔ Markeer als Opgelost\n"
+      rejected: "&c✘ Markeer als Afgewezen\n"
+    hover_text:
+      report_for: "&7Klik om te melden voor: &f{category}"
+      custom_reason: "&7Klik om een eigen reden op te geven"
+      pending: "&7Klik om terug te zetten op in behandeling"
+      resolved: "&7Klik om te markeren als opgelost"
+      rejected: "&7Klik om te markeren als afgewezen"
+      back: "&7Klik om terug te gaan naar rapportagecategorieën"
+    main_menu:
+      pending:
+        title: "&6• Rapportage in behandeling"
+        hover: "&7Klik om te bekijken"
+      resolved:
+        title: "&a• Opgeloste rapportages"
+        hover: "&7Klik om te bekijken"
+      rejected:
+        title: "&c• Afgewezen rapportages"
+        hover: "&7Klik om te bekijken"
+    report_list:
+      title: "&4{status} Rapportages\n"
+      total: "&7Totaal: {total}\n\n"
+      entry: "&4{index}. &c{reported}"
+      user_title: "&4Jouw rapportages\n"
+      user_entry: "&4{index}. &c{reported} {color}({status})"
+
+  # Container GUI (Kistinterface)
+  # Wordt gebruikt wanneer gui.type is ingesteld op "container" in het config.yml bestand.
+  container:
+    shared:
+      separator: "&8&m                                           &r"
+      navigation:
+        page_indicator:
+          title: "&fPagina {page} van {total}"
+          lore: "&7Rapportages {start}-{end} van {total} getoond"
+        previous_page:
+          title: "&eVorige pagina"
+          lore: "&7Ga naar pagina {page}"
+        next_page:
+          title: "&eVolgende pagina"
+          lore: "&7Ga naar pagina {page}"
+        back_button:
+          title: "&eTerug"
+          lore: "&7Terug naar categorieën"
+
+    menus:
+      main_menu:
+        title: "Rapportagesmenu"
+        pending:
+          title: "&6Rapportages in behandeling"
+          lore:
+            description: "&7Bekijk alle rapportages in behandeling."
+            action: "&eKlik om te bekijken!"
+        resolved:
+          title: "&aOpgeloste rapportages"
+          lore:
+            description: "&7Bekijk alle opgeloste rapportages."
+            action: "&eKlik om te bekijken!"
+        rejected:
+          title: "&cAfgewezen rapportages"
+          lore:
+            description: "&7Bekijk alle afgewezen rapportages."
+            action: "&eKlik om te bekijken!"
+
+      category_view:
+        title: "{status} Rapportages"
+        report_item:
+          title: "<gradient:#AFA3FF:#AFA3FF>{reporter}</gradient> <grey>→ <gradient:#FF0000:#FF0000>{reported}</gradient>"
+          lore:
+            reason: "<gradient:#AFA3FF:#AFA3FF>Reden:</gradient> <white>{reason}</white>"
+            status: "<gradient:#AFA3FF:#AFA3FF>Status:</gradient> <white>{status}</white>"
+            id: "<gradient:#AFA3FF:#AFA3FF>ID:</gradient> <white>{id}</white>"
+            server: "<gradient:#AFA3FF:#AFA3FF>Server:</gradient> <white>{server}</white>"
+            action: "<gradient:#FF0000:#FF0000>Klik om te beheren</gradient>"
+
+      player_reports:
+        title: "Jouw rapportages"
+
+      reason_selector:
+        title: "Rapporteer: {target}"
+        info_icon:
+          title: "<gradient:#AFA3FF:#AFA3FF>Rapportage van:</gradient> <white>{target}</white>"
+          lore:
+            - ""
+            - "&fSelecteer een reden om deze speler te rapporteren"
+            - "&fKlik op een icoon om je rapportage in te dienen"
+            - ""
+        reason_item:
+          title: "<gradient:#AFA3FF:#AFA3FF>{reason}</gradient>"
+          lore:
+            target: " "
+            action: "&aKlik om rapportage in te dienen"
+        custom_reason_item:
+          title: "&cEigen reden"
+          lore: "&7Klik om een eigen reden in te voeren"
+
+    manage_report:
+      title: "Rapportage {id} beheren"
+      back_button:
+        title: "&cTerug"
+        lore: "&7Terug naar {status} rapportages"
+      details:
+        title: "<gradient:#AFA3FF:#AFA3FF>Rapportdetails</gradient>"
+        lore:
+          reporter: "<gradient:#AFA3FF:#AFA3FF>Melder:</gradient> <white>{reporter}</white>"
+          reported: "<gradient:#AFA3FF:#AFA3FF>Gemeld:</gradient> <white>{reported}"
+          reason: "<gradient:#AFA3FF:#AFA3FF>Reden:</gradient> <white>{reason}</white>"
+          status: "<gradient:#AFA3FF:#AFA3FF>Status:</gradient> <white>{status}</white>"
+          id: "<gradient:#AFA3FF:#AFA3FF>ID:</gradient> <white>{id}</white>"
+          server: "<gradient:#AFA3FF:#AFA3FF>Server:</gradient> <white>{server}</white>"
+      pending:
+        title: "&6Verplaats naar In behandeling"
+        lore:
+          description: "&7Zet deze rapportage op in behandeling voor beoordeling."
+          current_status: "&7Huidige status: &f{status}"
+          action: "&6Klik om status te wijzigen"
+      resolved:
+        title: "&aVerplaats naar Opgelost"
+        lore:
+          description: "&7Markeer deze rapportage als opgelost."
+          current_status: "&7Huidige status: &f{status}"
+          action: "&aKlik om status te wijzigen"
+      rejected:
+        title: "&cVerplaats naar Afgewezen"
+        lore:
+          description: "&7Wijs deze rapportage af als ongeldig."
+          current_status: "&7Huidige status: &f{status}"
+          action: "&cKlik om status te wijzigen"
+
+# Algemene teksten
+# Gedeelde tekstelementen, statussen en standaard rapportageredenen.
+common:
+  unknown: "Onbekend"
+  anonymous: "Anoniem"
+  status:
+    pending: "In behandeling"
+    resolved: "Opgelost"
+    rejected: "Afgewezen"
+  reasons:
+    - "Hacken/Valsspelen"
+    - "Intimidatie/Pesten"
+    - "Spam/Reclame"
+    - "Vandalisme"
+    - "Bugs misbruiken"
+    - "Ongepaste skin/naam"
+    - "Ongepast taalgebruik"
+    - "Anders"
+
+# Chatberichten
+# Directe meldingen, fouten en succesberichten verzonden naar spelers
+# of personeelsleden in de standaard Minecraft chat.
+messages:
+  # Het voorvoegsel dat voor de meeste plugin berichten verschijnt
+  prefix: "<gradient:#AFA3FF:#AFA3FF>Rapportages</gradient> <grey>➡</grey>"
+
+  error:
+    no-permission: "{prefix} &cJe hebt hier geen toestemming voor!"
+    player-only: "{prefix} &cAlleen spelers kunnen dit commando gebruiken!"
+    invalid-player: "{prefix} &cDie speler bestaat niet!"
+    invalid-group: "{prefix} &cOngeldige rapportagestatusgroep."
+    report-not-found: "{prefix} &cRapportage niet gevonden!"
+    no-reports: "{prefix} &cJe hebt geen actieve rapportages!"
+    no-status-reports: "{prefix} &cGeen {status} rapportages gevonden."
+    status-invalid: "{prefix} &cOngeldige rapportagestatus! Beschikbare statussen: {statuses}"
+    category-invalid: "{prefix} &cOngeldige rapportagecategorie! Beschikbare categorieën: {categories}"
+    custom-reason-disabled: "{prefix} &cEigen redenen zijn momenteel uitgeschakeld."
+    custom-reason-too-short: "{prefix} &cJe eigen reden is te kort! Minimale lengte: {min} tekens"
+    custom-reason-too-long: "{prefix} &cJe eigen reden is te lang! Maximale lengte: {max} tekens"
+    usage-report: "&cGebruik: /report <speler> [reden]"
+    usage-viewreport: "&cGebruik: /viewreport <id>"
+    usage-setstatus: "&cGebruik: /setreportstatus <id> naar <status>"
+    invalid-report-id: "&cOngeldig rapportage ID!"
+    status-already-set: "&cRapportage heeft deze status al!"
+    cannot-report-self: "&cJe kunt jezelf niet melden."
+
+  success:
+    report-created: "{prefix} &aJe rapportage is succesvol ingediend!"
+
+  report:
+    cooldown: "{prefix} &cJe moet {time} wachten voordat je nog een rapportage kunt indienen."
+    limit-reached: "{prefix} &cJe hebt het maximale aantal actieve rapportages reached."
+    notification: "{prefix} <gradient:#BEFF00:#D2FF00>{reporter}</gradient> &fheeft <gradient:#FF0000:#FF003E>{reported}</gradient> &fgemeld voor: <gradient:#00B7FF:#0098FF>{category}</gradient>"
+    status-change: "{prefix} &7De status van rapportage #{id} is gewijzigd naar {color}{status}&7."
+    custom-reason-prompt: "{prefix} &fTyp je eigen reden in de chat. Je bericht is privé."
+
+  admin:
+    reload-success: "{prefix} &aConfiguratie succesvol herladen!"
+    reload-failure: "{prefix} &cHerladen van configuratie mislukt. Controleer de console."
