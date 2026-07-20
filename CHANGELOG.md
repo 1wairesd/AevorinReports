@@ -2,11 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.1.0] - N/A
+## [1.1.0] - 2026-07-20
 
 ### Improvements & Bug Fixes
 
-- Added German language support.
 - Added support for reporting offline players who have played on the server before.
   - `/report <player>` now resolves targets through Bukkit `OfflinePlayer`, allowing reports against cached offline players while still rejecting unknown players.
   - Added `reports.allow-offline-player-reporting` to `config.yml`, defaulting to `true`, so servers can disable offline-player reporting if desired.
@@ -16,7 +15,15 @@ All notable changes to this project will be documented in this file.
   - This allows placeholders such as `%reports_total_pending%` to display live values in configured GUI text.
 - Cleaned up Java imports in the language manager for improved readability.
 
+### Language Support
+
+- Added **German** language support.
+- Added **Dutch** language support.
+- Added **Vietnamese** language support.
+
 ### Contributors
+
+Special thanks to **Qracky** & **Karven** for the Dutch & Vietnamese language translations.
 
 We are looking for translators to add even more language support to AevorinReports! Join our [Discord server](https://discord.gg/SV2dXt5SwF) and open a ticket if you'd like to help!
 

@@ -1,0 +1,238 @@
+# Placeholders có sẵn (Một số placeholders không hoạt động trong một số xâu):
+# {reporter} - Người tố cáo
+# {reported} - Người bị tố cáo
+# {target}   - Target player (Thường là giống với người bị tố cáo)
+# {reason}   - Lí do để tố cáo
+# {status}   - Trạng thái hiện tại của tố cáo (e.g., đang chờ xử lí, đã xử lí)
+# {color}    - Mã màu của trạng thái của tố cáo
+# {id}       - ID của report
+# {server}   - Máy chủ tố cáo được tạo tại
+# {index}    - Thứ tự trong danh sách
+# {total}    - Tổng số lượng của tố cáo, trang, hoặc vật phẩm
+# {page}     - Trang hiện tại
+# {start}    - Index bắt đầu
+# {end}      - Index kết thúc
+# {category} - Tên danh mục tố cáo
+# {time}     - Thời gian cooldown còn lại
+# {date}     - Ngày giờ tố cáo được tạo
+#
+# Hỗ trợ MiniMessage (e.g., <rainbow>, <red>, <gradient:blue:aqua>)
+# Các mã code cũ (<1.7) cũng được hỗ trợ.
+
+config-version: 2
+
+# GUI Interface Settings
+# Contains all text formatting for the Report Plugin's interactive GUIs.
+gui:
+  # Book GUI
+  # Được sử dụng khi gui.type là "book" trong config.yml.
+  # Note: Dùng '\n' to để tạo dòng mới trong sách!
+  book:
+    error_creating: "&cLỗi xảy ra khi tạo giao diện."
+    reporting_header: "&4Tố cáo người chơi:\n&c{target}"
+    reasons_header: "&4Lí do:"
+    custom_reason: "&c• Lí do khác"
+    back_button: "\n&8« Quay lại các danh mục"
+    page:
+      title: "&cThông tin tố cáo\n\n"
+      reporter: "&7Người tố cáo: &a{reporter}\n"
+      reported: "&7Người bị tố cáo: &c{reported}\n"
+      reason: "&7Lí do: "
+      reason_hover: "&cDi chuột để xem"
+      reason_hover_content: "&f{reason}"
+      status: "&7Trạng thái: {color}{status}\n"
+      id: "&7ID: &0{id}"
+      server: "&7Máy chủ: &c{server}\n"
+      click_to_change: "\n&8Nhấn để thay đổi trạng thái\n"
+      reports_category_header: "&4Danh mục tố cáo\n\n"
+      view_details: "&7Nhấn để xem chi tiết"
+    status_options:
+      pending: "&6⚠ Đặt trạng thái đang chờ xử lí\n"
+      resolved: "&a✔ Đặt trạng thái đã xử lí\n"
+      rejected: "&c✘ Đặt trạng thái từ chối\n"
+    hover_text:
+      report_for: "&7Nhấn để tố cáo vì: &f{category}"
+      custom_reason: "&7Nhấn để điền lí do khác"
+      pending: "&7Click to return to pending"
+      resolved: "&7Nhấn để đặt trạng thái đã xử lí"
+      rejected: "&7Nhấn để đặt trạng thái từ chối"
+      back: "&7Nhấn để quay lại các danh mục"
+    main_menu:
+      pending:
+        title: "&6• Tố cáo đang xử lí"
+        hover: "&7Nhấn để xem"
+      resolved:
+        title: "&a• Tố cáo đã xử lí"
+        hover: "&7Nhấn để xem"
+      rejected:
+        title: "&c• Tố cáo bị từ chối"
+        hover: "&7Nhấn để xem"
+    report_list:
+      title: "&4Tố cáo {status}\n"
+      total: "&7Tổng: {total}\n\n"
+      entry: "&4{index}. &c{reported}"
+      user_title: "&4Tố cáo của bạn\n"
+      user_entry: "&4{index}. &c{reported} {color}({status})"
+
+  # Container GUI (Chest Interface)
+  # Được dùng khi gui.type là "container" trong config.yml.
+  container:
+    shared:
+      separator: "&8&m                                          &r"
+      navigation:
+        page_indicator:
+          title: "&fTrang {page} trên tổng {total} trang"
+          lore: "&7Đang hiển thị {start}-{end} trên tổng {total} tố cáo"
+        previous_page:
+          title: "&eTrang trước"
+          lore: "&7Đi đến trang {page}"
+        next_page:
+          title: "&eTrang sau"
+          lore: "&7Đi đến trang {page}"
+        back_button:
+          title: "&eQuay lại"
+          lore: "&7Quay lại các danh mục"
+
+    menus:
+      main_menu:
+        title: "Tố cáo"
+        pending:
+          title: "&6Tố cáo đang chờ xử lí"
+          lore:
+            description: "&7Xem tất cả tố cáo đang chờ xử lí."
+            action: "&eNhấn để xem!"
+        resolved:
+          title: "&aTố cáo đã xử lí"
+          lore:
+            description: "&7Nhấn để xem tố cáo đã xử lí."
+            action: "&eNhấn để xem!"
+        rejected:
+          title: "&cTố cáo bị từ chối"
+          lore:
+            description: "&7Nhấn để xem tố cáo bị từ chối."
+            action: "&eNhấn để xem!"
+
+      category_view:
+        title: "Tố cáo {status}"
+        report_item:
+          title: "<gradient:#AFA3FF:#AFA3FF>{reporter}</gradient> <grey>→ <gradient:#FF0000:#FF0000>{reported}</gradient>"
+          lore:
+            reason: "<gradient:#AFA3FF:#AFA3FF>Lí do:</gradient> <white>{reason}</white>"
+            status: "<gradient:#AFA3FF:#AFA3FF>Trạng thái:</gradient> <white>{status}</white>"
+            id: "<gradient:#AFA3FF:#AFA3FF>ID:</gradient> <white>{id}</white>"
+            server: "<gradient:#AFA3FF:#AFA3FF>Máy chủ:</gradient> <white>{server}</white>"
+            action: "<gradient:#FF0000:#FF0000>Nhấn để quản lí</gradient>"
+
+      player_reports:
+        title: "Tố cáo của bạn"
+
+      reason_selector:
+        title: "Tố cáo: {target}"
+        info_icon:
+          title: "<gradient:#AFA3FF:#AFA3FF>Đang tố cáo:</gradient> <white>{target}</white>"
+          lore:
+            - ""
+            - "&fChọn lí do để tố cáo người chơi này"
+            - "&fNhấn vào nút bất kì để gửi"
+            - ""
+        reason_item:
+          title: "<gradient:#AFA3FF:#AFA3FF>{reason}</gradient>"
+          lore:
+            target: " "
+            action: "&aNhấn để gửi tố cáo"
+        custom_reason_item:
+          title: "&cLí do khác"
+          lore: "&7Nhấn để điền một lí do khác"
+
+    manage_report:
+      title: "Quản lí tố cáo {id}"
+      back_button:
+        title: "&cQuay lại"
+        lore: "&7Quay lại tố cáo {status}"
+      details:
+        title: "<gradient:#AFA3FF:#AFA3FF>Chi tiết</gradient>"
+        lore:
+          reporter: "<gradient:#AFA3FF:#AFA3FF>Người tố cáo:</gradient> <white>{reporter}</white>"
+          reported: "<gradient:#AFA3FF:#AFA3FF>Người bị tố cáo:</gradient> <white>{reported}"
+          reason: "<gradient:#AFA3FF:#AFA3FF>Lí do:</gradient> <white>{reason}</white>"
+          status: "<gradient:#AFA3FF:#AFA3FF>Trạng thái:</gradient> <white>{status}</white>"
+          id: "<gradient:#AFA3FF:#AFA3FF>ID:</gradient> <white>{id}</white>"
+          server: "<gradient:#AFA3FF:#AFA3FF>Máy chủ:</gradient> <white>{server}</white>"
+      pending:
+        title: "&6Đặt trạng thái đang chờ xử lí"
+        lore:
+          description: "&7Đặt trạng thái thành đang chờ xử lí."
+          current_status: "&7Trạng thái hiện tại: &f{status}"
+          action: "&6Nhấn để thay đổi trạng thái"
+      resolved:
+        title: "&aĐặt trạng thái đã xử lí"
+        lore:
+          description: "&7Đặt trạng thái thành đang đã xử lí."
+          current_status: "&7Trạng thái hiện tại: &f{status}"
+          action: "&aNhấn để thay đổi trạng thái"
+      rejected:
+        title: "&cĐặt trạng thái bị từ chối"
+        lore:
+          description: "&7Đặt trạng thái thành bị từ chối."
+          current_status: "&7Trạng thái hiện tại: &f{status}"
+          action: "&cNhấn để thay đổi trạng thái"
+
+# Common Strings
+# Shared text elements, statuses, and default report reasons.
+common:
+  unknown: "không xác định"
+  anonymous: "ẩn danh"
+  status:
+    pending: "đang chờ xử lí"
+    resolved: "đã xử lí"
+    rejected: "bị từ chối"
+  reasons:
+    - "Hack/Cheat"
+    - "Quấy rối/Bắt nạt"
+    - "Spam/Quảng cáo"
+    - "Phá server"
+    - "Lợi dụng, sử dụng bug"
+    - "Skin/Tên không phù hợp"
+    - "Ngôn ngữ không phù hợp"
+    - "Khác"
+
+# Chat Messages
+# Direct notifications, errors, and success messages sent to players
+# or staff members in standard Minecraft chat.
+messages:
+  # The prefix that appears before most plugin messages
+  prefix: "<gradient:#AFA3FF:#AFA3FF>Tố cáo</gradient> <grey>➡</grey>"
+
+  error:
+    no-permission: "{prefix} &cBạn không có quyền làm điều này!"
+    player-only: "{prefix} &cLệnh chỉ dành cho người chơi!"
+    invalid-player: "{prefix} &cNgười chơi không tồn tại!"
+    invalid-group: "{prefix} &cNhóm trạng thái không hợp lệ."
+    report-not-found: "{prefix} &cKhông tìm thấy tố cáo!"
+    no-reports: "{prefix} &cBạn không có tố cáo đang hoạt động nào!"
+    no-status-reports: "{prefix} &cKhông tìm được tố cáo {status} nào."
+    status-invalid: "{prefix} &cTrạng thái không hợp lệ. Danh sách các trạng thái: {statuses}"
+    category-invalid: "{prefix} &cDanh mục tố cáo không hợp lệ. Danh sách các danh mục: {categories}"
+    custom-reason-disabled: "{prefix} &cLí do khác đã tắt."
+    custom-reason-too-short: "{prefix} &cLí do quá ngắn! Độ dài tối thiểu: {min} kí tự"
+    custom-reason-too-long: "{prefix} &cLí do quá dài! Độ dài tối đa: {max} kí tự"
+    usage-report: "&cSử dụng: /report <người chơi> [lí do]"
+    usage-viewreport: "&cSử dụng: /viewreport <id>"
+    usage-setstatus: "&cSử dụng: /setreportstatus <id> to <trạng thái mới>"
+    invalid-report-id: "&cID không hợp lệ!"
+    status-already-set: "&cTrạng thái không đổi!"
+    cannot-report-self: "&cBạn không thể tố cáo bản thân."
+
+  success:
+    report-created: "{prefix} &aGửi thành công!"
+
+  report:
+    cooldown: "{prefix} &cĐợi {time} trước khi gửi một tố cáo khác."
+    limit-reached: "{prefix} &cBạn đã đạt giới hạn số lượng tố cáo."
+    notification: "{prefix} <gradient:#BEFF00:#D2FF00>{reporter}</gradient> &fđã tố cáo <gradient:#FF0000:#FF003E>{reported}</gradient> &fvì: <gradient:#00B7FF:#0098FF>{category}</gradient>"
+    status-change: "{prefix} &7Tố cáo #{id} đã được chuyển thành {color}{status}&7."
+    custom-reason-prompt: "{prefix} &fĐiền lí do vào chat. Tin nhắn sẽ không hiển thị."
+
+  admin:
+    reload-success: "{prefix} &aReload thành công!"
+    reload-failure: "{prefix} &cReload không thành công. Xem console."
