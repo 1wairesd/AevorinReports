@@ -2,6 +2,7 @@ package dev.aevorinstudios.aevorinReports.discord;
 
 import dev.aevorinstudios.aevorinReports.bukkit.BukkitPlugin;
 import dev.aevorinstudios.aevorinReports.config.ConfigManager;
+import dev.aevorinstudios.aevorinReports.config.LanguageManager;
 import dev.aevorinstudios.aevorinReports.reports.Report;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -17,11 +18,14 @@ import org.bukkit.Bukkit;
 
 import java.awt.Color;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -85,23 +89,29 @@ public class DiscordManager {
 
             // Register Slash Commands
             jda.updateCommands().addCommands(
-                    net.dv8tion.jda.api.interactions.commands.build.Commands.slash("resolve", "Resolve a report")
+                    net.dv8tion.jda.api.interactions.commands.build.Commands.slash("resolve",
+                            lang("discord.commands.resolve.description", "Resolve a report"))
                             .addOption(net.dv8tion.jda.api.interactions.commands.OptionType.INTEGER, "id",
-                                    "The Report ID", true),
-                    net.dv8tion.jda.api.interactions.commands.build.Commands.slash("reject", "Reject a report")
+                                    lang("discord.commands.options.id", "The Report ID"), true),
+                    net.dv8tion.jda.api.interactions.commands.build.Commands.slash("reject",
+                            lang("discord.commands.reject.description", "Reject a report"))
                             .addOption(net.dv8tion.jda.api.interactions.commands.OptionType.INTEGER, "id",
-                                    "The Report ID", true),
+                                    lang("discord.commands.options.id", "The Report ID"), true),
                     net.dv8tion.jda.api.interactions.commands.build.Commands
-                            .slash("pending", "Set report status back to pending")
+                            .slash("pending",
+                                    lang("discord.commands.pending.description", "Set report status back to pending"))
                             .addOption(net.dv8tion.jda.api.interactions.commands.OptionType.INTEGER, "id",
-                                    "The Report ID", true),
+                                    lang("discord.commands.options.id", "The Report ID"), true),
                     net.dv8tion.jda.api.interactions.commands.build.Commands
-                            .slash("lookup", "Lookup detailed information about a report")
+                            .slash("lookup",
+                                    lang("discord.commands.lookup.description",
+                                            "Lookup detailed information about a report"))
                             .addOption(net.dv8tion.jda.api.interactions.commands.OptionType.INTEGER, "id",
-                                    "The Report ID", true),
+                                    lang("discord.commands.options.id", "The Report ID"), true),
                     net.dv8tion.jda.api.interactions.commands.build.Commands.slash("reports",
-                            "List all active reports"),
-                    net.dv8tion.jda.api.interactions.commands.build.Commands.slash("help", "Show the help menu"))
+                            lang("discord.commands.reports.description", "List all active reports")),
+                    net.dv8tion.jda.api.interactions.commands.build.Commands.slash("help",
+                            lang("discord.commands.help.description", "Show the help menu")))
                     .queue();
 
             plugin.getLogger().info("Discord bot successfully started and commands registered!");
@@ -169,6 +179,21 @@ public class DiscordManager {
         }
         if (jda != null) {
             jda.shutdown();
+
+            // Block until JDA fully shuts down, otherwise its background threads may
+            // try to load classes from the closed plugin jar after an unload/reload
+            // ("IllegalStateException: zip file closed"). Recommended pattern from
+            // the official JDA troubleshooting guide:
+            // https://jda.wiki/using-jda/troubleshooting/
+            try {
+                if (!jda.awaitShutdown(java.time.Duration.ofSeconds(10))) {
+                    jda.shutdownNow(); // Cancel queued requests and force shutdown
+                    jda.awaitShutdown();
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                jda.shutdownNow();
+            }
         }
     }
 
@@ -252,8 +277,13 @@ public class DiscordManager {
             return;
         }
 
-        String title = plugin.getConfig().getString("discord.notifications.title", "New Report (#%id%)")
-                .replace("%id%", String.valueOf(report.getId()));
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("id", String.valueOf(report.getId()));
+
+        String title = lang(
+                "discord.notifications.new-report.title",
+                plugin.getConfig().getString("discord.notifications.title", "New Report (#{id})"),
+                placeholders);
 
         String colorHex = plugin.getConfig().getString("discord.notifications.color", "#ff5555");
         Color color = Color.RED;
@@ -265,21 +295,26 @@ public class DiscordManager {
         EmbedBuilder embed = new EmbedBuilder()
                 .setTitle(title)
                 .setColor(color)
-                .addField("Reporter", report.getReporterName() != null ? report.getReporterName() : "Unknown", true)
-                .addField("Reported",
-                        report.getReportedPlayerName() != null ? report.getReportedPlayerName() : "Unknown", true)
-                .addField("ID", "#" + report.getId(), true)
-                .addField("Reason", "```" + report.getReason() + "```", false);
+                .addField(lang("discord.fields.reporter", "Reporter"),
+                        report.getReporterName() != null ? report.getReporterName() : unknown(), true)
+                .addField(lang("discord.fields.reported", "Reported"),
+                        report.getReportedPlayerName() != null ? report.getReportedPlayerName() : unknown(), true)
+                .addField(lang("discord.fields.id", "ID"), "#" + report.getId(), true)
+                .addField(lang("discord.fields.reason", "Reason"), "```" + report.getReason() + "```", false);
 
         if (plugin.getDatabaseManager().hasMultipleServers()) {
-            embed.addField("Server", "`" + report.getServerName() + "`", true);
+            embed.addField(lang("discord.fields.server", "Server"), "`" + report.getServerName() + "`", true);
         }
 
-        embed.addField("Location", "`" + (report.getWorld() != null ? report.getWorld() : "Unknown") + "` ("
-                + (report.getCoordinates() != null ? report.getCoordinates() : "Unknown") + ")", true);
+        embed.addField(lang("discord.fields.location", "Location"),
+                "`" + (report.getWorld() != null ? report.getWorld() : unknown()) + "` ("
+                        + (report.getCoordinates() != null ? report.getCoordinates() : unknown()) + ")",
+                true);
 
         String footer = plugin.getConfig().getString("discord.notifications.footer", "AevorinReports • %date%")
                 .replace("%date%", report.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        placeholders.put("date", report.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        footer = lang("discord.notifications.new-report.footer", footer, placeholders);
         embed.setFooter(footer);
 
         try {
@@ -324,9 +359,13 @@ public class DiscordManager {
         };
 
         EmbedBuilder embed = new EmbedBuilder()
-                .setTitle("Report Updated")
-                .setDescription("Report **#" + report.getId() + "** has been **" + status.name().toLowerCase()
-                        + "** by " + adminName + ".")
+                .setTitle(lang("discord.notifications.status-update.title", "Report Updated"))
+                .setDescription(lang("discord.notifications.status-update.description",
+                        "Report **#{id}** has been **{status}** by {admin}.",
+                        Map.of(
+                                "id", String.valueOf(report.getId()),
+                                "status", localizedStatus(status),
+                                "admin", adminName)))
                 .setColor(color);
 
         try {
@@ -366,5 +405,27 @@ public class DiscordManager {
         }
         invalidLogChannelIdWarned = true;
         plugin.getLogger().warning("[Discord] Invalid discord.log-channel-id in config.yml. Use only the numeric channel ID, not a Discord URL.");
+    }
+
+    private String localizedStatus(Report.ReportStatus status) {
+        return lang("common.status." + status.name().toLowerCase(Locale.ROOT), status.name().toLowerCase(Locale.ROOT));
+    }
+
+    private String unknown() {
+        return lang("common.unknown", "Unknown");
+    }
+
+    private String lang(String path, String fallback) {
+        String value = LanguageManager.get(plugin).getRawMessage(path);
+        return value.startsWith("Missing lang: ") ? fallback : value;
+    }
+
+    private String lang(String path, String fallback, Map<String, String> placeholders) {
+        String value = lang(path, fallback);
+        for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+            value = value.replace("{" + entry.getKey() + "}", entry.getValue());
+            value = value.replace("%" + entry.getKey() + "%", entry.getValue());
+        }
+        return value;
     }
 }

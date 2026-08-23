@@ -19,7 +19,7 @@
 # Ondersteunt MiniMessage tags (bijv. <rainbow>, <red>, <gradient:blue:aqua>)
 # Legacy & codes worden ook ondersteund.
 
-config-version: 2
+config-version: 3
 
 # GUI interface instellingen
 # Bevat alle tekstformattering voor de interactieve GUI's van de plugin.
@@ -236,3 +236,61 @@ messages:
   admin:
     reload-success: "{prefix} &aConfiguratie succesvol herladen!"
     reload-failure: "{prefix} &cHerladen van configuratie mislukt. Controleer de console."
+# Discord Messages
+# Text used by Discord slash commands, replies, and embeds.
+discord:
+  commands:
+    options:
+      id: "The Report ID"
+    resolve:
+      description: "Resolve a report"
+    reject:
+      description: "Reject a report"
+    pending:
+      description: "Set report status back to pending"
+    lookup:
+      description: "Lookup detailed information about a report"
+    reports:
+      description: "List all active reports"
+    help:
+      description: "Show the help menu"
+  fields:
+    reporter: "Reporter"
+    reported: "Reported"
+    reported-player: "Reported Player"
+    id: "ID"
+    reason: "Reason"
+    server: "Server"
+    location: "Location"
+    status: "Status"
+    submitted-at: "Submitted At"
+  notifications:
+    new-report:
+      title: "New Report (#{id})"
+      footer: "AevorinReports - {date}"
+    status-update:
+      title: "Report Updated"
+      description: "Report **#{id}** has been **{status}** by {admin}."
+  responses:
+    guild-only: "Commands can only be used in a server."
+    no-permission: "You don't have permission to manage reports."
+    database-unavailable: "The report database is currently unavailable. Please contact an administrator or check the server console."
+    report-not-found: "Report #{id} not found."
+    status-already-set: "Report #{id} is already {status}."
+    status-updated-title: "Report Updated"
+    status-updated-description: "Successfully updated Report **#{id}** to **{status}**."
+    no-active-reports: "There are no active reports."
+  help:
+    title: "AevorinReports Help"
+    description: "Manage Minecraft reports from Discord using official Slash Commands."
+    reports: "List all active pending reports."
+    lookup: "Show detailed info about a report."
+    resolve: "Mark a report as resolved."
+    reject: "Mark a report as rejected."
+    pending: "Move a report back to pending."
+    help: "Show this help menu."
+  lookup:
+    title: "Report Details: #{id}"
+  reports:
+    title: "Active Reports"
+    and-more: "*...and more*"

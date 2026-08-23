@@ -10,6 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * PlaceholderAPI Expansion for AevorinReports
@@ -17,7 +19,13 @@ import java.util.UUID;
  */
 public class AevorinReportsExpansion extends PlaceholderExpansion {
 
+    private static final long CACHE_TTL_MS = 30_000L;
+    private static final int CACHE_MAX_SIZE = 512;
+
     private final BukkitPlugin plugin;
+    private final ConcurrentMap<String, CachedValue> cache = new ConcurrentHashMap<>();
+
+    private record CachedValue(String value, long expiresAt) {}
 
     public AevorinReportsExpansion(BukkitPlugin plugin) {
         this.plugin = plugin;
@@ -54,6 +62,30 @@ public class AevorinReportsExpansion extends PlaceholderExpansion {
     @Override
     @Nullable
     public String onPlaceholderRequest(Player player, @NotNull String identifier) {
+        // Placeholders can be requested very frequently (scoreboard/tab),
+        // so serve values from a short-lived cache instead of hitting the DB every time
+        String cacheKey = (player != null ? player.getUniqueId().toString() : "server") + ":" + identifier;
+        long now = System.currentTimeMillis();
+
+        CachedValue cached = cache.get(cacheKey);
+        if (cached != null && now < cached.expiresAt()) {
+            return cached.value();
+        }
+
+        String result = computePlaceholderValue(player, identifier);
+        if (result != null) {
+            cache.put(cacheKey, new CachedValue(result, now + CACHE_TTL_MS));
+
+            // Opportunistic cleanup to keep the cache bounded
+            if (cache.size() > CACHE_MAX_SIZE) {
+                cache.entrySet().removeIf(e -> e.getValue().expiresAt() < now);
+            }
+        }
+        return result;
+    }
+
+    @Nullable
+    private String computePlaceholderValue(Player player, @NotNull String identifier) {
         DatabaseManager db = plugin.getDatabaseManager();
         if (db == null) {
             return "0";
