@@ -167,6 +167,11 @@ public class ReportsContainerListener implements Listener {
                     return;
                 }
 
+                // Public log entry in the Discord log channel (JDA is thread-safe for sending)
+                if (plugin.getDiscordManager() != null) {
+                    plugin.getDiscordManager().sendLogUpdate(report, player.getName());
+                }
+
                 // Reopen category view on the main thread
                 List<Report> reports = plugin.getDatabaseManager().getReportsByStatus(fNewStatus);
                 runSync(player, () -> {
