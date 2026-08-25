@@ -69,8 +69,11 @@ public class ReportsContainerListener implements Listener {
         else if (slot == 16) status = Report.ReportStatus.REJECTED;
 
         if (status != null) {
-            List<Report> reports = plugin.getDatabaseManager().getReportsByStatus(status);
-            new CategoryContainerGUI(plugin).openCategoryGUI(player, status, reports);
+            Report.ReportStatus fStatus = status;
+            runAsync(() -> {
+                List<Report> reports = plugin.getDatabaseManager().getReportsByStatus(fStatus);
+                runSync(player, () -> new CategoryContainerGUI(plugin).openCategoryGUI(player, fStatus, reports));
+            });
         }
     }
 
@@ -80,8 +83,11 @@ public class ReportsContainerListener implements Listener {
             if (clicked.getType() == Material.ARROW) {
                 int targetPage = holder.getPage() + (slot == 50 ? 1 : -1);
                 if (targetPage >= 0) {
-                    List<Report> reports = plugin.getDatabaseManager().getReportsByStatus(holder.getStatus());
-                    new CategoryContainerGUI(plugin).openCategoryGUI(player, holder.getStatus(), reports, targetPage);
+                    Report.ReportStatus status = holder.getStatus();
+                    runAsync(() -> {
+                        List<Report> reports = plugin.getDatabaseManager().getReportsByStatus(status);
+                        runSync(player, () -> new CategoryContainerGUI(plugin).openCategoryGUI(player, status, reports, targetPage));
+                    });
                 }
             }
             return;
@@ -99,10 +105,7 @@ public class ReportsContainerListener implements Listener {
             org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, "report_id");
             if (meta.getPersistentDataContainer().has(key, org.bukkit.persistence.PersistentDataType.LONG)) {
                 long id = meta.getPersistentDataContainer().get(key, org.bukkit.persistence.PersistentDataType.LONG);
-                Report report = plugin.getDatabaseManager().getReport(id);
-                if (report != null) {
-                    new ReportManageGUI(plugin).open(player, report);
-                }
+                openReportById(player, id);
                 return;
             }
         }
@@ -116,11 +119,8 @@ public class ReportsContainerListener implements Listener {
                         String[] parts = plain.split(": ");
                         if (parts.length > 1) {
                             long id = Long.parseLong(parts[parts.length-1].trim());
-                            Report report = plugin.getDatabaseManager().getReport(id);
-                            if (report != null) {
-                                new ReportManageGUI(plugin).open(player, report);
-                                break;
-                            }
+                            openReportById(player, id);
+                            break;
                         }
                     } catch (Exception ignored) {}
                 }
@@ -128,12 +128,24 @@ public class ReportsContainerListener implements Listener {
         }
     }
 
+    private void openReportById(Player player, long id) {
+        runAsync(() -> {
+            Report report = plugin.getDatabaseManager().getReport(id);
+            if (report != null) {
+                runSync(player, () -> new ReportManageGUI(plugin).open(player, report));
+            }
+        });
+    }
+
     private void handleManageClick(Player player, ReportManageHolder holder, int slot) {
         Report report = holder.getReport();
 
         if (slot == 36) {
-            java.util.List<Report> reports = plugin.getDatabaseManager().getReportsByStatus(report.getStatus());
-            new CategoryContainerGUI(plugin).openCategoryGUI(player, report.getStatus(), reports, 0);
+            Report.ReportStatus backStatus = report.getStatus();
+            runAsync(() -> {
+                List<Report> reports = plugin.getDatabaseManager().getReportsByStatus(backStatus);
+                runSync(player, () -> new CategoryContainerGUI(plugin).openCategoryGUI(player, backStatus, reports, 0));
+            });
             return;
         }
 
@@ -144,24 +156,40 @@ public class ReportsContainerListener implements Listener {
         else if (slot == 53) newStatus = Report.ReportStatus.REJECTED;
 
         if (newStatus != null && newStatus != report.getStatus()) {
-            report.setStatus(newStatus);
-            plugin.getDatabaseManager().updateReport(report);
+            Report.ReportStatus fNewStatus = newStatus;
+            report.setStatus(fNewStatus);
 
-            // Reopen category view
-            List<Report> reports = plugin.getDatabaseManager().getReportsByStatus(newStatus);
-            new CategoryContainerGUI(plugin).openCategoryGUI(player, newStatus, reports);
+            runAsync(() -> {
+                try {
+                    plugin.getDatabaseManager().updateReport(report);
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Failed to update report status: " + e.getMessage());
+                    return;
+                }
 
-            LanguageManager lang = LanguageManager.get(plugin);
-            String statusColor = switch(newStatus) {
-                case PENDING -> "&6";
-                case RESOLVED -> "&a";
-                case REJECTED -> "&c";
-            };
-            dev.aevorinstudios.aevorinReports.utils.MessageUtils.sendMessage(player, lang.getMessage("messages.report.status-change", java.util.Map.of(
-                "id", String.valueOf(report.getId()),
-                "status", lang.getLocalizedStatus(newStatus),
-                "color", statusColor
-            )));
+                // Public log entry in the Discord log channel (JDA is thread-safe for sending)
+                if (plugin.getDiscordManager() != null) {
+                    plugin.getDiscordManager().sendLogUpdate(report, player.getName());
+                }
+
+                // Reopen category view on the main thread
+                List<Report> reports = plugin.getDatabaseManager().getReportsByStatus(fNewStatus);
+                runSync(player, () -> {
+                    new CategoryContainerGUI(plugin).openCategoryGUI(player, fNewStatus, reports);
+
+                    LanguageManager lang = LanguageManager.get(plugin);
+                    String statusColor = switch(fNewStatus) {
+                        case PENDING -> "&6";
+                        case RESOLVED -> "&a";
+                        case REJECTED -> "&c";
+                    };
+                    dev.aevorinstudios.aevorinReports.utils.MessageUtils.sendMessage(player, lang.getMessage("messages.report.status-change", java.util.Map.of(
+                        "id", String.valueOf(report.getId()),
+                        "status", lang.getLocalizedStatus(fNewStatus),
+                        "color", statusColor
+                    )));
+                });
+            });
         }
     }
 
@@ -211,10 +239,24 @@ public class ReportsContainerListener implements Listener {
             if (clicked.getType() == Material.ARROW) {
                 int targetPage = holder.getPage() + (slot == 50 ? 1 : -1);
                 if (targetPage >= 0) {
-                    List<Report> reports = plugin.getDatabaseManager().getReportsByReporter(player.getUniqueId());
-                    new CategoryContainerGUI(plugin).openPlayerReportsGUI(player, reports, targetPage);
+                    runAsync(() -> {
+                        List<Report> reports = plugin.getDatabaseManager().getReportsByReporter(player.getUniqueId());
+                        runSync(player, () -> new CategoryContainerGUI(plugin).openPlayerReportsGUI(player, reports, targetPage));
+                    });
                 }
             }
         }
+    }
+
+    private void runAsync(Runnable task) {
+        dev.aevorinstudios.aevorinReports.utils.SchedulerUtils.runTaskAsynchronously(plugin, task);
+    }
+
+    private void runSync(Player player, Runnable task) {
+        // Guard against players disconnecting while the async query is in flight
+        if (!player.isOnline()) {
+            return;
+        }
+        dev.aevorinstudios.aevorinReports.utils.SchedulerUtils.runTask(plugin, player, task);
     }
 }

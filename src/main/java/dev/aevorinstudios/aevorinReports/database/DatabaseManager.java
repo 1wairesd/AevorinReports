@@ -550,8 +550,28 @@ public class DatabaseManager {
             // Ensure schema is up to date (add missing columns for older databases)
             ensureTableSchema(conn);
 
+            createIndexes(conn);
+
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void createIndexes(Connection conn) {
+        String[] indexes = {
+            "CREATE INDEX IF NOT EXISTS idx_reports_reporter ON reports (reporter_uuid)",
+            "CREATE INDEX IF NOT EXISTS idx_reports_reported ON reports (reported_uuid)",
+            "CREATE INDEX IF NOT EXISTS idx_reports_status ON reports (status)",
+            "CREATE INDEX IF NOT EXISTS idx_reports_server_status ON reports (server_name, status)",
+            "CREATE INDEX IF NOT EXISTS idx_reports_updated_at ON reports (updated_at)"
+        };
+        for (String sql : indexes) {
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                // MySQL < 8.0 does not support IF NOT EXISTS for indexes; ignore duplicates
+                logger.debug("Index creation skipped: {}", e.getMessage());
+            }
         }
     }
 

@@ -84,6 +84,13 @@ public class SchedulerUtils {
     }
 
     /**
+     * Schedules a one-off asynchronous task (e.g. database or network I/O).
+     */
+    public static void runTaskAsynchronously(Plugin plugin, Runnable task) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, task);
+    }
+
+    /**
      * Schedules an async task.
      * Note: Bukkit's async scheduler works on Folia effectively the same for general purpose async tasks.
      * However, Folia has an AsyncScheduler, but Bukkit's is also supported.

@@ -60,7 +60,13 @@ public class SetReportStatusCommand implements CommandExecutor, TabCompleter {
             }
 
             report.setStatus(newStatus);
+            report.setLastUpdatedBy(player.getName());
             plugin.getDatabaseManager().updateReport(report);
+
+            // Public log entry in the Discord log channel
+            if (plugin.getDiscordManager() != null) {
+                plugin.getDiscordManager().sendLogUpdate(report, player.getName());
+            }
 
             String statusColor = switch(newStatus) {
             case PENDING -> "&6";

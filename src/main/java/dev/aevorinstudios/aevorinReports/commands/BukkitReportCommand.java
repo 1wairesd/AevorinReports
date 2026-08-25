@@ -7,6 +7,7 @@ import dev.aevorinstudios.aevorinReports.gui.ReportReasonContainerGUI;
 import dev.aevorinstudios.aevorinReports.reports.Report;
 import dev.aevorinstudios.aevorinReports.config.LanguageManager;
 import dev.aevorinstudios.aevorinReports.utils.MessageUtils;
+import dev.aevorinstudios.aevorinReports.utils.SchedulerUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -22,8 +23,14 @@ import java.util.List;
 import java.util.Map;
 
 public class BukkitReportCommand implements CommandExecutor, TabCompleter {
+    private static final long OFFLINE_NAMES_CACHE_TTL_MS = 5 * 60 * 1000L;
+
     private final BukkitPlugin plugin;
     private final Map<java.util.UUID, Long> cooldowns = new HashMap<>();
+    private volatile List<String> cachedOfflineNames = List.of();
+    private volatile long offlineNamesCacheTime = 0L;
+    private final java.util.concurrent.atomic.AtomicBoolean refreshingOfflineNames =
+            new java.util.concurrent.atomic.AtomicBoolean(false);
 
     public BukkitReportCommand(BukkitPlugin plugin) {
         this.plugin = plugin;
@@ -83,9 +90,8 @@ public class BukkitReportCommand implements CommandExecutor, TabCompleter {
         // Check active reports limit
         if (!player.hasPermission("aevorinreports.bypass.limit")) {
             int maxActive = plugin.getConfigManager().getConfig().getReports().getMaxActiveReportsPerPlayer();
-            long activeCount = plugin.getDatabaseManager().getReportsByReporter(player.getUniqueId()).stream()
-                    .filter(r -> r.getStatus() == Report.ReportStatus.PENDING)
-                    .count();
+            long activeCount = plugin.getDatabaseManager().getReportsCountByReporterAndStatus(
+                    player.getUniqueId(), Report.ReportStatus.PENDING);
 
             if (activeCount >= maxActive) {
                 MessageUtils.sendMessage(player, lang.getMessage("messages.report.limit-reached"));
@@ -166,9 +172,9 @@ public class BukkitReportCommand implements CommandExecutor, TabCompleter {
             }
 
             if (plugin.getConfig().getBoolean("reports.allow-offline-player-reporting", true)) {
-                for (OfflinePlayer offlinePlayer : plugin.getServer().getOfflinePlayers()) {
-                    String name = offlinePlayer.getName();
-                    if (name != null && name.toLowerCase().startsWith(partialName) && !playerNames.contains(name)) {
+                refreshOfflineNamesCacheIfNeeded();
+                for (String name : cachedOfflineNames) {
+                    if (name.toLowerCase().startsWith(partialName) && !playerNames.contains(name)) {
                         playerNames.add(name);
                     }
                 }
@@ -210,32 +216,76 @@ public class BukkitReportCommand implements CommandExecutor, TabCompleter {
                 .updatedAt(now)
                 .build();
 
-        // Save report to database
-        DatabaseManager.getInstance().saveReport(report);
-
-        // Send Discord notification
-        if (plugin.getDiscordManager() != null) {
-            plugin.getDiscordManager().sendReportNotification(report);
-        }
-
-        // Notify staff members
-        String notification = lang.getMessage("messages.report.notification", Map.of(
-            "reporter", reporter.getName(),
-            "reported", targetPlayer,
-            "category", category
-        ));
-
-        for (Player staff : plugin.getServer().getOnlinePlayers()) {
-            if (staff.hasPermission("aevorinreports.notify")) {
-                MessageUtils.sendMessage(staff, notification);
-            }
-        }
-
-        // Notify reporter of success
-        MessageUtils.sendMessage(reporter, lang.getMessage("messages.success.report-created"));
-
-        // Update cooldown
+        // Apply cooldown immediately to prevent spamming while the save is in flight
         cooldowns.put(reporter.getUniqueId(), System.currentTimeMillis());
+
+        DatabaseManager db = plugin.getDatabaseManager();
+        if (db == null) {
+            return;
+        }
+
+        // Save report to database off the main thread, then notify on the main thread
+        SchedulerUtils.runTaskAsynchronously(plugin, () -> {
+            try {
+                db.saveReport(report);
+            } catch (Exception e) {
+                plugin.getLogger().warning("Failed to save report: " + e.getMessage());
+                return;
+            }
+
+            // Send Discord notification
+            if (plugin.getDiscordManager() != null) {
+                plugin.getDiscordManager().sendReportNotification(report);
+            }
+
+            // Notify staff members and reporter back on the main thread
+            SchedulerUtils.runTask(plugin, reporter, () -> {
+                if (!reporter.isOnline()) {
+                    return;
+                }
+
+                String notification = lang.getMessage("messages.report.notification", Map.of(
+                    "reporter", reporter.getName(),
+                    "reported", targetPlayer,
+                    "category", category
+                ));
+
+                for (Player staff : plugin.getServer().getOnlinePlayers()) {
+                    if (staff.hasPermission("aevorinreports.notify")) {
+                        MessageUtils.sendMessage(staff, notification);
+                    }
+                }
+
+                MessageUtils.sendMessage(reporter, lang.getMessage("messages.success.report-created"));
+            });
+        });
+    }
+
+    private void refreshOfflineNamesCacheIfNeeded() {
+        long now = System.currentTimeMillis();
+        if (now - offlineNamesCacheTime < OFFLINE_NAMES_CACHE_TTL_MS) {
+            return;
+        }
+        if (!refreshingOfflineNames.compareAndSet(false, true)) {
+            return;
+        }
+        offlineNamesCacheTime = now;
+        SchedulerUtils.runTaskAsynchronously(plugin, () -> {
+            try {
+                List<String> names = new ArrayList<>();
+                for (OfflinePlayer offlinePlayer : plugin.getServer().getOfflinePlayers()) {
+                    String name = offlinePlayer.getName();
+                    if (name != null) {
+                        names.add(name);
+                    }
+                }
+                cachedOfflineNames = names;
+            } catch (Exception e) {
+                plugin.getLogger().warning("Failed to refresh offline player name cache: " + e.getMessage());
+            } finally {
+                refreshingOfflineNames.set(false);
+            }
+        });
     }
 
     private String formatTime(long seconds) {
