@@ -166,6 +166,7 @@ server-name: "survival"
 - **server-name**: Identifies the server in multi-server setups.
   - Must be unique when multiple servers share the same database.
   - Displayed in Discord embeds and network-wide logs.
+  - Cloned servers: Before starting a cloned server instance for the first time, delete the copied aevorin_server_token.dat file from its root directory so that a new, unique server identity token can be generated.
 
 ---
 
@@ -333,7 +334,7 @@ messages:
 - Fully customizable messages.
 - Supports color codes (`&`) and placeholders.
 - MiniMessage is supported where applicable.
-- PlaceholderAPI placeholders can be used in supported GUI text, including book GUI text and container GUI titles, item names, and lore.
+- PlaceholderAPI placeholders can be used in supported GUI text, including container GUI titles, item names, and lore.
 - See the official [AevorinReports PlaceholderAPI placeholder list](https://wiki.placeholderapi.com/users/placeholder-list/minecraft/#aevorinreports).
 
 ---
@@ -450,9 +451,12 @@ notifications:
 
 ## 11. Analytics & Telemetry
 
-### bStats
+### FastStats & bStats
+
+[![Servers & Players](https://faststats.dev/embed/dbda03d2-0624-4b46-9c2e-33899e83b74e.svg?w=960&h=340&theme=dark)](https://faststats.dev/project/aevorinreports/aevorinreports-analytics)
 
 [![AevorinReports usage graph](https://bstats.org/signatures/bukkit/AevorinReports.svg)](https://bstats.org/plugin/bukkit/AevorinReports/28310)
+
 
 ### FastStats
 
