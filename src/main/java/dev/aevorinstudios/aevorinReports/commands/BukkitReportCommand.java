@@ -21,12 +21,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BukkitReportCommand implements CommandExecutor, TabCompleter {
     private static final long OFFLINE_NAMES_CACHE_TTL_MS = 5 * 60 * 1000L;
 
     private final BukkitPlugin plugin;
     private final Map<java.util.UUID, Long> cooldowns = new HashMap<>();
+    private final Map<java.util.UUID, Integer> pendingReservations = new ConcurrentHashMap<>();
     private volatile List<String> cachedOfflineNames = List.of();
     private volatile long offlineNamesCacheTime = 0L;
     private final java.util.concurrent.atomic.AtomicBoolean refreshingOfflineNames =
@@ -92,8 +95,9 @@ public class BukkitReportCommand implements CommandExecutor, TabCompleter {
             int maxActive = plugin.getConfigManager().getConfig().getReports().getMaxActiveReportsPerPlayer();
             long activeCount = plugin.getDatabaseManager().getReportsCountByReporterAndStatus(
                     player.getUniqueId(), Report.ReportStatus.PENDING);
+            int pending = pendingReservations.getOrDefault(player.getUniqueId(), 0);
 
-            if (activeCount >= maxActive) {
+            if (activeCount + pending >= maxActive) {
                 MessageUtils.sendMessage(player, lang.getMessage("messages.report.limit-reached"));
                 return true;
             }
@@ -216,11 +220,14 @@ public class BukkitReportCommand implements CommandExecutor, TabCompleter {
                 .updatedAt(now)
                 .build();
 
-        // Apply cooldown immediately to prevent spamming while the save is in flight
+        // Apply cooldown and reservation immediately to prevent spamming while the save is in flight
         cooldowns.put(reporter.getUniqueId(), System.currentTimeMillis());
+        pendingReservations.merge(reporter.getUniqueId(), 1, Integer::sum);
 
         DatabaseManager db = plugin.getDatabaseManager();
         if (db == null) {
+            cooldowns.remove(reporter.getUniqueId());
+            pendingReservations.merge(reporter.getUniqueId(), -1, Integer::sum);
             return;
         }
 
@@ -230,8 +237,18 @@ public class BukkitReportCommand implements CommandExecutor, TabCompleter {
                 db.saveReport(report);
             } catch (Exception e) {
                 plugin.getLogger().warning("Failed to save report: " + e.getMessage());
+                SchedulerUtils.runTask(plugin, reporter, () -> {
+                    cooldowns.remove(reporter.getUniqueId());
+                    pendingReservations.merge(reporter.getUniqueId(), -1, Integer::sum);
+                    if (reporter.isOnline()) {
+                        MessageUtils.sendMessage(reporter, lang.getMessage("messages.error.database-unavailable", Map.of("id", "none")));
+                    }
+                });
                 return;
             }
+            
+            // Save successful, remove reservation
+            pendingReservations.merge(reporter.getUniqueId(), -1, Integer::sum);
 
             // Send Discord notification
             if (plugin.getDiscordManager() != null) {
@@ -270,16 +287,18 @@ public class BukkitReportCommand implements CommandExecutor, TabCompleter {
             return;
         }
         offlineNamesCacheTime = now;
+        
+        List<String> namesSnapshot = new ArrayList<>();
+        for (OfflinePlayer offlinePlayer : plugin.getServer().getOfflinePlayers()) {
+            String name = offlinePlayer.getName();
+            if (name != null) {
+                namesSnapshot.add(name);
+            }
+        }
+        
         SchedulerUtils.runTaskAsynchronously(plugin, () -> {
             try {
-                List<String> names = new ArrayList<>();
-                for (OfflinePlayer offlinePlayer : plugin.getServer().getOfflinePlayers()) {
-                    String name = offlinePlayer.getName();
-                    if (name != null) {
-                        names.add(name);
-                    }
-                }
-                cachedOfflineNames = names;
+                cachedOfflineNames = namesSnapshot;
             } catch (Exception e) {
                 plugin.getLogger().warning("Failed to refresh offline player name cache: " + e.getMessage());
             } finally {

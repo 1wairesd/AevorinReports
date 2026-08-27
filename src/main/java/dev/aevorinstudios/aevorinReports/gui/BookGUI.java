@@ -251,9 +251,7 @@ public class BookGUI {
                 itemsOnPage = 0;
             }
 
-            String reportedName = PlayerNameResolver.resolvePlayerName(
-                report.getReported()
-            );
+            String reportedName = PlayerNameResolver.resolveReportedName(report);
 
             TextComponent reportEntry = createInteractiveLegacy(
                 player,
@@ -348,9 +346,7 @@ public class BookGUI {
                 itemsOnPage = 0;
             }
 
-            String reportedName = PlayerNameResolver.resolvePlayerName(
-                report.getReported()
-            );
+            String reportedName = PlayerNameResolver.resolveReportedName(report);
             String statusColor = getStatusColor(report.getStatus());
 
             TextComponent reportEntry = createInteractiveLegacy(
@@ -423,10 +419,8 @@ public class BookGUI {
 
         String reporterName = report.isAnonymous()
             ? lang.getMessage("common.anonymous", "Anonymous")
-            : PlayerNameResolver.resolvePlayerName(report.getReporter());
-        String reportedName = PlayerNameResolver.resolvePlayerName(
-            report.getReported()
-        );
+            : PlayerNameResolver.resolveReporterName(report);
+        String reportedName = PlayerNameResolver.resolveReportedName(report);
 
         List<BaseComponent> components = new ArrayList<>();
         components.add(
@@ -610,10 +604,8 @@ public class BookGUI {
 
         String reporterName = report.isAnonymous()
             ? lang.getMessage("common.anonymous", "Anonymous")
-            : PlayerNameResolver.resolvePlayerName(report.getReporter());
-        String reportedName = PlayerNameResolver.resolvePlayerName(
-            report.getReported()
-        );
+            : PlayerNameResolver.resolveReporterName(report);
+        String reportedName = PlayerNameResolver.resolveReportedName(report);
         if (reporterName == null) reporterName = lang.getMessage(
             "common.unknown"
         );

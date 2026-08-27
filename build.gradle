@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'dev.aevorinstudios'
-version = '1.1.0'
+version = '1.1.1'
 description = 'A comprehensive reporting system for Minecraft servers'
 
 java {
@@ -54,7 +54,7 @@ dependencies {
         exclude group: 'opus-java' // Not needed for a bot that only sends messages/commands
     }
     // FastStats (shaded)
-    implementation 'dev.faststats.metrics:bukkit:0.18.0'
+    implementation 'dev.faststats.metrics:bukkit:0.29.0'
 }
 
 tasks.withType(JavaCompile).configureEach {

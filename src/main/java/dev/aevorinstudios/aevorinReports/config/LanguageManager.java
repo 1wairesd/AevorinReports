@@ -67,15 +67,12 @@ public class LanguageManager {
         langFile = new File(langDir, langName + ".yml");
         boolean isSupported = SUPPORTED_LANGUAGES.contains(langName);
 
-        // Extract all bundled language files so users see their options
-        for (String supported : SUPPORTED_LANGUAGES) {
-            File file = new File(langDir, supported + ".yml");
-            if (!file.exists()) {
-                try {
-                    plugin.saveResource("lang/" + supported + ".yml", false);
-                } catch (IllegalArgumentException ignored) {
-                    // Resource might not exist in jar, safely ignore
-                }
+        // Extract only the configured language file if it is supported and doesn't exist
+        if (isSupported && !langFile.exists()) {
+            try {
+                plugin.saveResource("lang/" + langName + ".yml", false);
+            } catch (IllegalArgumentException ignored) {
+                // Resource might not exist in jar, safely ignore
             }
         }
 

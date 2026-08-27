@@ -352,13 +352,9 @@ public class CategoryContainerGUI {
             if (slotIndex >= innerSlots.size()) break;
 
             String reporterName =
-                dev.aevorinstudios.aevorinReports.utils.PlayerNameResolver.resolvePlayerName(
-                    report.getReporter()
-                );
+                dev.aevorinstudios.aevorinReports.utils.PlayerNameResolver.resolveReporterName(report);
             String reportedName =
-                dev.aevorinstudios.aevorinReports.utils.PlayerNameResolver.resolvePlayerName(
-                    report.getReported()
-                );
+                dev.aevorinstudios.aevorinReports.utils.PlayerNameResolver.resolveReportedName(report);
             if (reporterName == null) reporterName = lang.getMessage(
                 "common.unknown"
             );

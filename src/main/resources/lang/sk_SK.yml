@@ -241,56 +241,56 @@ messages:
 discord:
   commands:
     options:
-      id: "The Report ID"
+      id: "ID Nahlásenia"
     resolve:
-      description: "Resolve a report"
+      description: "Vyriešiť nahlásenie"
     reject:
-      description: "Reject a report"
+      description: "Zamietnuť nahlásenie"
     pending:
-      description: "Set report status back to pending"
+      description: "Nastaviť stav nahlásenia späť na čakajúce"
     lookup:
-      description: "Lookup detailed information about a report"
+      description: "Vyhľadať podrobné informácie o nahlásení"
     reports:
-      description: "List all active reports"
+      description: "Zobraziť všetky aktívne nahlásenia"
     help:
-      description: "Show the help menu"
+      description: "Zobraziť menu pomocníka"
   fields:
-    reporter: "Reporter"
-    reported: "Reported"
-    reported-player: "Reported Player"
+    reporter: "Nahlásil"
+    reported: "Nahlásený"
+    reported-player: "Nahlásený Hráč"
     id: "ID"
-    reason: "Reason"
+    reason: "Dôvod"
     server: "Server"
-    location: "Location"
-    status: "Status"
-    submitted-at: "Submitted At"
+    location: "Pozícia"
+    status: "Stav"
+    submitted-at: "Odoslané"
   notifications:
     new-report:
-      title: "New Report (#{id})"
+      title: "Nové Nahlásenie (#{id})"
       footer: "AevorinReports - {date}"
     status-update:
-      title: "Report Updated"
-      description: "Report **#{id}** has been **{status}** by {admin}."
+      title: "Nahlásenie Aktualizované"
+      description: "Nahlásenie **#{id}** bolo **{status}** od {admin}."
   responses:
-    guild-only: "Commands can only be used in a server."
-    no-permission: "You don't have permission to manage reports."
-    database-unavailable: "The report database is currently unavailable. Please contact an administrator or check the server console."
-    report-not-found: "Report #{id} not found."
-    status-already-set: "Report #{id} is already {status}."
-    status-updated-title: "Report Updated"
-    status-updated-description: "Successfully updated Report **#{id}** to **{status}**."
-    no-active-reports: "There are no active reports."
+    guild-only: "Príkazy je možné použiť iba na serveri."
+    no-permission: "Nemáš povolenie na správu nahlásení."
+    database-unavailable: "Databáza nahlásení je momentálne nedostupná. Kontaktuj administrátora alebo skontroluj konzolu servera."
+    report-not-found: "Nahlásenie #{id} sa nenašlo."
+    status-already-set: "Nahlásenie #{id} už je {status}."
+    status-updated-title: "Nahlásenie Aktualizované"
+    status-updated-description: "Úspešne aktualizované Nahlásenie **#{id}** na **{status}**."
+    no-active-reports: "Neexistujú žiadne aktívne nahlásenia."
   help:
-    title: "AevorinReports Help"
-    description: "Manage Minecraft reports from Discord using official Slash Commands."
-    reports: "List all active pending reports."
-    lookup: "Show detailed info about a report."
-    resolve: "Mark a report as resolved."
-    reject: "Mark a report as rejected."
-    pending: "Move a report back to pending."
-    help: "Show this help menu."
+    title: "Nápoveda AevorinReports"
+    description: "Spravuj nahlásenia Minecraftu z Discordu pomocou oficiálnych Slash príkazov."
+    reports: "Zobraziť všetky aktívne čakajúce nahlásenia."
+    lookup: "Zobraziť podrobné informácie o nahlásení."
+    resolve: "Označiť nahlásenie ako vyriešené."
+    reject: "Označiť nahlásenie ako zamietnuté."
+    pending: "Presunúť nahlásenie späť do čakajúcich."
+    help: "Zobraziť toto menu pomocníka."
   lookup:
-    title: "Report Details: #{id}"
+    title: "Podrobnosti o Nahlásení: #{id}"
   reports:
-    title: "Active Reports"
-    and-more: "*...and more*"
+    title: "Aktívne Nahlásenia"
+    and-more: "*...a viac*"

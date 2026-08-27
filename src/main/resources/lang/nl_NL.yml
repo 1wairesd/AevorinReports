@@ -241,56 +241,56 @@ messages:
 discord:
   commands:
     options:
-      id: "The Report ID"
+      id: "De Rapport ID"
     resolve:
-      description: "Resolve a report"
+      description: "Een rapport oplossen"
     reject:
-      description: "Reject a report"
+      description: "Een rapport afwijzen"
     pending:
-      description: "Set report status back to pending"
+      description: "Zet rapport status terug naar in afwachting"
     lookup:
-      description: "Lookup detailed information about a report"
+      description: "Zoek gedetailleerde informatie over een rapport op"
     reports:
-      description: "List all active reports"
+      description: "Lijst met alle actieve rapporten"
     help:
-      description: "Show the help menu"
+      description: "Toon het helpmenu"
   fields:
-    reporter: "Reporter"
-    reported: "Reported"
-    reported-player: "Reported Player"
+    reporter: "Melder"
+    reported: "Gemeld"
+    reported-player: "Gemelde Speler"
     id: "ID"
-    reason: "Reason"
+    reason: "Reden"
     server: "Server"
-    location: "Location"
+    location: "Locatie"
     status: "Status"
-    submitted-at: "Submitted At"
+    submitted-at: "Ingediend Op"
   notifications:
     new-report:
-      title: "New Report (#{id})"
+      title: "Nieuw Rapport (#{id})"
       footer: "AevorinReports - {date}"
     status-update:
-      title: "Report Updated"
-      description: "Report **#{id}** has been **{status}** by {admin}."
+      title: "Rapport Bijgewerkt"
+      description: "Rapport **#{id}** is **{status}** door {admin}."
   responses:
-    guild-only: "Commands can only be used in a server."
-    no-permission: "You don't have permission to manage reports."
-    database-unavailable: "The report database is currently unavailable. Please contact an administrator or check the server console."
-    report-not-found: "Report #{id} not found."
-    status-already-set: "Report #{id} is already {status}."
-    status-updated-title: "Report Updated"
-    status-updated-description: "Successfully updated Report **#{id}** to **{status}**."
-    no-active-reports: "There are no active reports."
+    guild-only: "Commando's kunnen alleen op een server worden gebruikt."
+    no-permission: "Je hebt geen toestemming om rapporten te beheren."
+    database-unavailable: "De rapport database is momenteel niet beschikbaar. Neem contact op met een beheerder of controleer de server console."
+    report-not-found: "Rapport #{id} niet gevonden."
+    status-already-set: "Rapport #{id} is al {status}."
+    status-updated-title: "Rapport Bijgewerkt"
+    status-updated-description: "Rapport **#{id}** succesvol bijgewerkt naar **{status}**."
+    no-active-reports: "Er zijn geen actieve rapporten."
   help:
     title: "AevorinReports Help"
-    description: "Manage Minecraft reports from Discord using official Slash Commands."
-    reports: "List all active pending reports."
-    lookup: "Show detailed info about a report."
-    resolve: "Mark a report as resolved."
-    reject: "Mark a report as rejected."
-    pending: "Move a report back to pending."
-    help: "Show this help menu."
+    description: "Beheer Minecraft rapporten vanuit Discord met behulp van officiële Slash Commands."
+    reports: "Lijst met alle actieve rapporten in afwachting."
+    lookup: "Toon gedetailleerde info over een rapport."
+    resolve: "Markeer een rapport als opgelost."
+    reject: "Markeer een rapport als afgewezen."
+    pending: "Zet een rapport terug naar in afwachting."
+    help: "Toon dit helpmenu."
   lookup:
-    title: "Report Details: #{id}"
+    title: "Rapport Details: #{id}"
   reports:
-    title: "Active Reports"
-    and-more: "*...and more*"
+    title: "Actieve Rapporten"
+    and-more: "*...en meer*"

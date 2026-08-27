@@ -1,5 +1,6 @@
 package dev.aevorinstudios.aevorinReports.utils;
 
+import dev.aevorinstudios.aevorinReports.reports.Report;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
@@ -19,6 +20,20 @@ public class PlayerNameResolver {
         // Fallback to offline player
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
         return offlinePlayer.getName() != null ? offlinePlayer.getName() : "Unknown";
+    }
+
+    public static String resolveReporterName(Report report) {
+        if (report.getReporterName() != null && !report.getReporterName().isEmpty()) {
+            return report.getReporterName();
+        }
+        return resolvePlayerName(report.getReporter());
+    }
+
+    public static String resolveReportedName(Report report) {
+        if (report.getReportedPlayerName() != null && !report.getReportedPlayerName().isEmpty()) {
+            return report.getReportedPlayerName();
+        }
+        return resolvePlayerName(report.getReported());
     }
     
     public static CompletableFuture<String> resolvePlayerNameAsync(UUID uuid) {

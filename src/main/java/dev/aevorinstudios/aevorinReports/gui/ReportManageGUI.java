@@ -62,13 +62,9 @@ public class ReportManageGUI {
 
         // Convert UUIDs to player names
         String reporterName =
-            dev.aevorinstudios.aevorinReports.utils.PlayerNameResolver.resolvePlayerName(
-                report.getReporter()
-            );
+            dev.aevorinstudios.aevorinReports.utils.PlayerNameResolver.resolveReporterName(report);
         String reportedName =
-            dev.aevorinstudios.aevorinReports.utils.PlayerNameResolver.resolvePlayerName(
-                report.getReported()
-            );
+            dev.aevorinstudios.aevorinReports.utils.PlayerNameResolver.resolveReportedName(report);
 
         if (reporterName == null) reporterName = lang.getMessage(
             "common.unknown"
@@ -328,12 +324,8 @@ public class ReportManageGUI {
         meta.setTitle("Report #" + report.getId());
         meta.setAuthor("Report System");
 
-        String reporterName = Bukkit.getOfflinePlayer(
-            report.getReporter()
-        ).getName();
-        String reportedName = Bukkit.getOfflinePlayer(
-            report.getReported()
-        ).getName();
+        String reporterName = dev.aevorinstudios.aevorinReports.utils.PlayerNameResolver.resolveReporterName(report);
+        String reportedName = dev.aevorinstudios.aevorinReports.utils.PlayerNameResolver.resolveReportedName(report);
         if (reporterName == null) reporterName = lang.getMessage(
             "common.unknown"
         );
