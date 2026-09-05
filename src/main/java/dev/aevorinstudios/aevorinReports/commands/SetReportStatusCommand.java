@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,9 +60,19 @@ public class SetReportStatusCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
 
+            Report.ReportStatus oldStatus = report.getStatus();
             report.setStatus(newStatus);
             report.setLastUpdatedBy(player.getName());
+            report.setUpdatedAt(LocalDateTime.now());
             plugin.getDatabaseManager().updateReport(report);
+
+            // Audit trail
+            plugin.getDatabaseManager().insertHistory(
+                reportId,
+                player.getUniqueId(),
+                "STATUS_CHANGE",
+                oldStatus.name() + " -> " + newStatus.name()
+            );
 
             // Public log entry in the Discord log channel
             if (plugin.getDiscordManager() != null) {

@@ -19,7 +19,7 @@
 # Podporuje značky MiniMessage (napr. <rainbow>, <red>, <gradient:blue:aqua>)
 # Podporované sú aj staršie kódy &.
 
-config-version: 3
+config-version: 4
 
 # GUI Interface Settings
 # Contains all text formatting for the Report Plugin's interactive GUIs.
@@ -43,6 +43,9 @@ gui:
       status: "&7Stav: {color}{status}\n"
       id: "&7ID: &0{id}"
       server: "&7Server: &c{server}\n"
+      created_at: "&7Vytvorené: &0{date}\n"
+      updated_at: "&7Aktualizované: &0{date}\n"
+      last_updated_by: "&7Zmenené: &0{name}\n"
       click_to_change: "&8Klikni na zmenenie stavu\n"
       reports_category_header: "&4Kategória nahlásení\n\n"
       view_details: "&7Klikni na zobrazenie detailov"
@@ -158,6 +161,9 @@ gui:
           status: "<gradient:#AFA3FF:#AFA3FF>Stav:</gradient> <white>{status}</white>"
           id: "<gradient:#AFA3FF:#AFA3FF>ID:</gradient> <white>{id}</white>"
           server: "<gradient:#AFA3FF:#AFA3FF>Server:</gradient> <white>{server}</white>"
+          created_at: "<gradient:#AFA3FF:#AFA3FF>Vytvorené:</gradient> <white>{date}</white>"
+          updated_at: "<gradient:#AFA3FF:#AFA3FF>Aktualizované:</gradient> <white>{date}</white>"
+          last_updated_by: "<gradient:#AFA3FF:#AFA3FF>Zmenené:</gradient> <white>{name}</white>"
       pending:
         title: "&6Presunuť do čakajúcich"
         lore:
@@ -271,6 +277,7 @@ discord:
     status-update:
       title: "Report Updated"
       description: "Report **#{id}** has been **{status}** by {admin}."
+      footer: "AevorinReports - {date}"
   responses:
     guild-only: "Commands can only be used in a server."
     no-permission: "You don't have permission to manage reports."

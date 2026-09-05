@@ -68,6 +68,7 @@ public class DatabaseManager {
                             .evidenceData(rs.getString("evidence_data"))
                             .coordinates(rs.getString("coordinates"))
                             .world(rs.getString("world"))
+                            .lastUpdatedBy(rs.getString("last_updated_by"))
                             .build());
                 }
             }
@@ -101,6 +102,7 @@ public class DatabaseManager {
                             .evidenceData(rs.getString("evidence_data"))
                             .coordinates(rs.getString("coordinates"))
                             .world(rs.getString("world"))
+                            .lastUpdatedBy(rs.getString("last_updated_by"))
                             .build());
                 }
             }
@@ -146,6 +148,7 @@ public class DatabaseManager {
                             .evidenceData(rs.getString("evidence_data"))
                             .coordinates(rs.getString("coordinates"))
                             .world(rs.getString("world"))
+                            .lastUpdatedBy(rs.getString("last_updated_by"))
                             .build());
                 }
             }
@@ -179,6 +182,7 @@ public class DatabaseManager {
                             .evidenceData(rs.getString("evidence_data"))
                             .coordinates(rs.getString("coordinates"))
                             .world(rs.getString("world"))
+                            .lastUpdatedBy(rs.getString("last_updated_by"))
                             .build());
                 }
             }
@@ -311,6 +315,7 @@ public class DatabaseManager {
                             .evidenceData(rs.getString("evidence_data"))
                             .coordinates(rs.getString("coordinates"))
                             .world(rs.getString("world"))
+                            .lastUpdatedBy(rs.getString("last_updated_by"))
                             .build());
                 }
             }
@@ -343,6 +348,7 @@ public class DatabaseManager {
                             .evidenceData(rs.getString("evidence_data"))
                             .coordinates(rs.getString("coordinates"))
                             .world(rs.getString("world"))
+                            .lastUpdatedBy(rs.getString("last_updated_by"))
                             .build();
                 }
             }
@@ -452,7 +458,8 @@ public class DatabaseManager {
                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         evidence_data TEXT,
                         coordinates VARCHAR(64),
-                        world VARCHAR(64)
+                        world VARCHAR(64),
+                        last_updated_by VARCHAR(64)
                     )
                     """
                     : """
@@ -461,9 +468,15 @@ public class DatabaseManager {
                                 reporter_uuid VARCHAR(36) NOT NULL,
                                 reported_uuid VARCHAR(36) NOT NULL,
                                 reason TEXT NOT NULL,
-                                server_name VARCHAR(64) NOT NULL,
+                                server_name VARCHAR(64) NOT NULL DEFAULT 'survival',
                                 status VARCHAR(32) NOT NULL DEFAULT 'PENDING',
-                                is_anonymous BOOLEAN DEFAULT 0
+                                is_anonymous BOOLEAN DEFAULT 0,
+                                created_at TIMESTAMP NULL,
+                                updated_at TIMESTAMP NULL,
+                                evidence_data TEXT,
+                                coordinates VARCHAR(64),
+                                world VARCHAR(64),
+                                last_updated_by VARCHAR(64)
                             )
                             """;
 
@@ -622,6 +635,10 @@ public class DatabaseManager {
                     logger.info("Column 'is_anonymous' missing. Adding...");
                     addColumn(conn, "reports", "is_anonymous", isSqlite ? "BOOLEAN DEFAULT 0" : "BOOLEAN DEFAULT 0");
                 }
+                if (!columns.contains("last_updated_by")) {
+                    logger.info("Column 'last_updated_by' missing. Adding...");
+                    addColumn(conn, "reports", "last_updated_by", "VARCHAR(64)");
+                }
             }
         } catch (SQLException e) {
             logger.error("Failed to check/update table schema: {}", e.getMessage(), e);
@@ -636,12 +653,74 @@ public class DatabaseManager {
         }
     }
 
+    /**
+     * Returns the creation timestamp of the most recent report submitted by a player.
+     */
+    public LocalDateTime getLastReportDateByReporter(UUID reporterUuid) {
+        String sql = "SELECT created_at FROM reports WHERE reporter_uuid = ? ORDER BY created_at DESC LIMIT 1";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, reporterUuid.toString());
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Timestamp ts = rs.getTimestamp("created_at");
+                    if (ts != null) return ts.toLocalDateTime();
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Failed to get last report date for reporter {}: {}", reporterUuid, e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Returns the creation timestamp of the most recent report filed against a player.
+     */
+    public LocalDateTime getLastReportDateAgainst(UUID reportedUuid) {
+        String sql = "SELECT created_at FROM reports WHERE reported_uuid = ? ORDER BY created_at DESC LIMIT 1";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, reportedUuid.toString());
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Timestamp ts = rs.getTimestamp("created_at");
+                    if (ts != null) return ts.toLocalDateTime();
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Failed to get last report date against {}: {}", reportedUuid, e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Inserts a record into report_history for audit trail.
+     *
+     * @param reportId  The ID of the report
+     * @param staffUuid The UUID of the staff member performing the action
+     * @param action    Short action label, e.g. "STATUS_CHANGE"
+     * @param details   Human-readable description, e.g. "PENDING -> RESOLVED"
+     */
+    public void insertHistory(long reportId, UUID staffUuid, String action, String details) {
+        String sql = "INSERT INTO report_history (report_id, staff_uuid, action, details) VALUES (?, ?, ?, ?)";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, reportId);
+            stmt.setString(2, staffUuid.toString());
+            stmt.setString(3, action);
+            stmt.setString(4, details);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("Failed to insert history for report {}: {}", reportId, e.getMessage());
+        }
+    }
+
     public Connection getConnection() throws SQLException {
         return dataSource.getConnection();
     }
 
     public void updateReport(Report report) {
-        String sql = "UPDATE reports SET reporter_uuid = ?, reported_uuid = ?, reason = ?, server_name = ?, status = ?, is_anonymous = ?, updated_at = ?, evidence_data = ?, coordinates = ?, world = ? WHERE id = ?";
+        String sql = "UPDATE reports SET reporter_uuid = ?, reported_uuid = ?, reason = ?, server_name = ?, status = ?, is_anonymous = ?, updated_at = ?, evidence_data = ?, coordinates = ?, world = ?, last_updated_by = ? WHERE id = ?";
 
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -656,7 +735,8 @@ public class DatabaseManager {
             stmt.setString(8, report.getEvidenceData());
             stmt.setString(9, report.getCoordinates());
             stmt.setString(10, report.getWorld());
-            stmt.setLong(11, report.getId());
+            stmt.setString(11, report.getLastUpdatedBy());
+            stmt.setLong(12, report.getId());
 
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected == 0) {

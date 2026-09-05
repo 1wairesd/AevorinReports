@@ -19,7 +19,7 @@
 # Obsługuje tagi MiniMessage (np. <rainbow>, <red>, <gradient:blue:aqua>)
 # Obsługiwane są również stare kody kolorów &.
 
-config-version: 3
+config-version: 4
 
 # Ustawienia Interfejsu GUI
 # Zawiera formatowanie tekstu dla interaktywnych menu pluginu.
@@ -43,6 +43,9 @@ gui:
       status: "&7Status: {color}{status}\n"
       id: "&7ID: &0{id}"
       server: "&7Serwer: &c{server}\n"
+      created_at: "&7Utworzono: &0{date}\n"
+      updated_at: "&7Zaktualizowano: &0{date}\n"
+      last_updated_by: "&7Zmieniono przez: &0{name}\n"
       click_to_change: "\n&8Kliknij, aby zmienić status\n"
       reports_category_header: "&4Kategoria zgłoszeń\n\n"
       view_details: "&7Kliknij, aby zobaczyć szczegóły"
@@ -158,6 +161,9 @@ gui:
           status: "<gradient:#AFA3FF:#AFA3FF>Status:</gradient> <white>{status}</white>"
           id: "<gradient:#AFA3FF:#AFA3FF>ID:</gradient> <white>{id}</white>"
           server: "<gradient:#AFA3FF:#AFA3FF>Serwer:</gradient> <white>{server}</white>"
+          created_at: "<gradient:#AFA3FF:#AFA3FF>Utworzono:</gradient> <white>{date}</white>"
+          updated_at: "<gradient:#AFA3FF:#AFA3FF>Zaktualizowano:</gradient> <white>{date}</white>"
+          last_updated_by: "<gradient:#AFA3FF:#AFA3FF>Zmieniono przez:</gradient> <white>{name}</white>"
       pending:
         title: "&6Przenieś do oczekujących"
         lore:
@@ -271,6 +277,7 @@ discord:
     status-update:
       title: "Report Updated"
       description: "Report **#{id}** has been **{status}** by {admin}."
+      footer: "AevorinReports - {date}"
   responses:
     guild-only: "Commands can only be used in a server."
     no-permission: "You don't have permission to manage reports."

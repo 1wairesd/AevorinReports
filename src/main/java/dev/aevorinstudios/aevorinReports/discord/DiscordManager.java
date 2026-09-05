@@ -368,6 +368,19 @@ public class DiscordManager {
                                 "admin", adminName)))
                 .setColor(color);
 
+        String nowFormatted = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        Map<String, String> footerPlaceholders = new HashMap<>();
+        footerPlaceholders.put("id", String.valueOf(report.getId()));
+        footerPlaceholders.put("date", nowFormatted);
+        String logFooter = lang("discord.notifications.status-update.footer",
+                "AevorinReports • " + nowFormatted, footerPlaceholders);
+        embed.setFooter(logFooter);
+
+        if (report.getCreatedAt() != null) {
+            embed.addField(lang("discord.fields.submitted-at", "Submitted At"),
+                    "`" + report.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + "`", true);
+        }
+
         try {
             if (channel.getGuild().getSelfMember() == null) {
                 plugin.getLogger().warning("[Discord] Cannot send log update: Self member not cached for guild "
