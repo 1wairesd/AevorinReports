@@ -16,7 +16,7 @@
 # {time}     - 剩余冷却时间
 # {date}     - 举报创建的日期时间
 
-config-version: 3
+config-version: 4
 
 # GUI界面配置项
 # 包含举报插件交互式图形界面所有文字格式内容
@@ -40,6 +40,9 @@ gui:
       status: "&7状态: {color}{status}\n"
       id: "&7编号: &0{id}"
       server: "&7服务器: &c{server}\n"
+      created_at: "&7创建时间: &0{date}\n"
+      updated_at: "&7更新时间: &0{date}\n"
+      last_updated_by: "&7操作人: &0{name}\n"
       click_to_change: "\n&8点击修改状态\n"
       reports_category_header: "&4举报类型\n\n"
       view_details: "&7点击查看详情"
@@ -155,6 +158,9 @@ gui:
           status: "&7状态: &f{status}"
           id: "&7单号: &f{id}"
           server: "&7服务器: &f{server}"
+          created_at: "&7创建时间: &f{date}"
+          updated_at: "&7更新时间: &f{date}"
+          last_updated_by: "&7操作人: &f{name}"
       pending:
         title: "&6&l改为待处理"
         lore:
@@ -274,6 +280,7 @@ discord:
     status-update:
       title: "举报已更新"
       description: "举报 **#{id}** 已被 {admin} 标记为 **{status}**。"
+      footer: "AevorinReports - {date}"
   responses:
     guild-only: "指令只能在服务器内使用。"
     no-permission: "你没有权限管理举报。"

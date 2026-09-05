@@ -19,7 +19,7 @@
 # Supports MiniMessage tags (e.g., <rainbow>, <red>, <gradient:blue:aqua>)
 # Legacy & codes are also supported.
 
-config-version: 3
+config-version: 4
 
 # GUI Interface Settings
 # Contains all text formatting for the Report Plugin's interactive GUIs.
@@ -43,6 +43,9 @@ gui:
       status: "&7Status: {color}{status}\n"
       id: "&7ID: &0{id}"
       server: "&7Server: &c{server}\n"
+      created_at: "&7Created: &0{date}\n"
+      updated_at: "&7Updated: &0{date}\n"
+      last_updated_by: "&7Updated by: &0{name}\n"
       click_to_change: "\n&8Click to change status\n"
       reports_category_header: "&4Reports Category\n\n"
       view_details: "&7Click to view details"
@@ -158,6 +161,9 @@ gui:
           status: "<gradient:#AFA3FF:#AFA3FF>Status:</gradient> <white>{status}</white>"
           id: "<gradient:#AFA3FF:#AFA3FF>ID:</gradient> <white>{id}</white>"
           server: "<gradient:#AFA3FF:#AFA3FF>Server:</gradient> <white>{server}</white>"
+          created_at: "<gradient:#AFA3FF:#AFA3FF>Created:</gradient> <white>{date}</white>"
+          updated_at: "<gradient:#AFA3FF:#AFA3FF>Last Updated:</gradient> <white>{date}</white>"
+          last_updated_by: "<gradient:#AFA3FF:#AFA3FF>Updated by:</gradient> <white>{name}</white>"
       pending:
         title: "&6Move to Pending"
         lore:
@@ -272,6 +278,7 @@ discord:
     status-update:
       title: "Report Updated"
       description: "Report **#{id}** has been **{status}** by {admin}."
+      footer: "AevorinReports - {date}"
   responses:
     guild-only: "Commands can only be used in a server."
     no-permission: "You don't have permission to manage reports."

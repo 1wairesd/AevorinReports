@@ -4,6 +4,7 @@ import dev.aevorinstudios.aevorinReports.bukkit.BukkitPlugin;
 import dev.aevorinstudios.aevorinReports.config.LanguageManager;
 import dev.aevorinstudios.aevorinReports.reports.Report;
 import dev.aevorinstudios.aevorinReports.utils.MessageUtils;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -90,6 +91,18 @@ public class ReportManageGUI {
             serverName = lang.getMessage("common.unknown");
         }
 
+        // Build date strings
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String createdAtStr = report.getCreatedAt() != null
+            ? report.getCreatedAt().format(dtf)
+            : lang.getMessage("common.unknown");
+        String updatedAtStr = report.getUpdatedAt() != null
+            ? report.getUpdatedAt().format(dtf)
+            : lang.getMessage("common.unknown");
+        String lastUpdatedByStr = (report.getLastUpdatedBy() != null && !report.getLastUpdatedBy().isEmpty())
+            ? report.getLastUpdatedBy()
+            : lang.getMessage("common.unknown");
+
         infoMeta.setLore(
             parsePlaceholders(
                 player,
@@ -124,6 +137,18 @@ public class ReportManageGUI {
                     lang.getMessage(
                         "gui.container.manage_report.details.lore.server",
                         Map.of("server", serverName)
+                    ),
+                    lang.getMessage(
+                        "gui.container.manage_report.details.lore.created_at",
+                        Map.of("date", createdAtStr)
+                    ),
+                    lang.getMessage(
+                        "gui.container.manage_report.details.lore.updated_at",
+                        Map.of("date", updatedAtStr)
+                    ),
+                    lang.getMessage(
+                        "gui.container.manage_report.details.lore.last_updated_by",
+                        Map.of("name", lastUpdatedByStr)
                     ),
                     lang.getMessage("gui.container.shared.separator")
                 )
@@ -463,6 +488,33 @@ public class ReportManageGUI {
                 Map.of("server", serverName)
             );
             paginator.add(createLegacy(player, serverText), serverText);
+        }
+
+        // Dates
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String createdAtStr = report.getCreatedAt() != null
+            ? report.getCreatedAt().format(dtf)
+            : lang.getMessage("common.unknown");
+        String updatedAtStr = report.getUpdatedAt() != null
+            ? report.getUpdatedAt().format(dtf)
+            : lang.getMessage("common.unknown");
+        String createdAtText = lang.getMessage(
+            "gui.book.page.created_at",
+            Map.of("date", createdAtStr)
+        );
+        paginator.add(createLegacy(player, createdAtText), createdAtText);
+        String updatedAtText = lang.getMessage(
+            "gui.book.page.updated_at",
+            Map.of("date", updatedAtStr)
+        );
+        paginator.add(createLegacy(player, updatedAtText), updatedAtText);
+
+        if (report.getLastUpdatedBy() != null && !report.getLastUpdatedBy().isEmpty()) {
+            String lastUpdatedByText = lang.getMessage(
+                "gui.book.page.last_updated_by",
+                Map.of("name", report.getLastUpdatedBy())
+            );
+            paginator.add(createLegacy(player, lastUpdatedByText), lastUpdatedByText);
         }
 
         paginator.add(createLegacy(player, "\n"), "\n");

@@ -19,7 +19,7 @@
 # Ondersteunt MiniMessage tags (bijv. <rainbow>, <red>, <gradient:blue:aqua>)
 # Legacy & codes worden ook ondersteund.
 
-config-version: 3
+config-version: 4
 
 # GUI interface instellingen
 # Bevat alle tekstformattering voor de interactieve GUI's van de plugin.
@@ -43,6 +43,9 @@ gui:
       status: "&7Status: {color}{status}\n"
       id: "&7ID: &0{id}"
       server: "&7Server: &c{server}\n"
+      created_at: "&7Aangemaakt: &0{date}\n"
+      updated_at: "&7Bijgewerkt: &0{date}\n"
+      last_updated_by: "&7Gewijzigd door: &0{name}\n"
       click_to_change: "\n&8Klik om status te wijzigen\n"
       reports_category_header: "&4Rapportagecategorie\n\n"
       view_details: "&7Klik om details te bekijken"
@@ -158,6 +161,9 @@ gui:
           status: "<gradient:#AFA3FF:#AFA3FF>Status:</gradient> <white>{status}</white>"
           id: "<gradient:#AFA3FF:#AFA3FF>ID:</gradient> <white>{id}</white>"
           server: "<gradient:#AFA3FF:#AFA3FF>Server:</gradient> <white>{server}</white>"
+          created_at: "<gradient:#AFA3FF:#AFA3FF>Aangemaakt:</gradient> <white>{date}</white>"
+          updated_at: "<gradient:#AFA3FF:#AFA3FF>Bijgewerkt:</gradient> <white>{date}</white>"
+          last_updated_by: "<gradient:#AFA3FF:#AFA3FF>Gewijzigd door:</gradient> <white>{name}</white>"
       pending:
         title: "&6Verplaats naar In behandeling"
         lore:
@@ -271,6 +277,7 @@ discord:
     status-update:
       title: "Rapport Bijgewerkt"
       description: "Rapport **#{id}** is **{status}** door {admin}."
+      footer: "AevorinReports - {date}"
   responses:
     guild-only: "Commando's kunnen alleen op een server worden gebruikt."
     no-permission: "Je hebt geen toestemming om rapporten te beheren."

@@ -23,6 +23,8 @@ These placeholders use the player who is viewing or receiving the placeholder re
 | `%reports_pending_against%` | Pending reports made against the viewing player. |
 | `%reports_resolved_against%` | Resolved reports made against the viewing player. |
 | `%reports_rejected_against%` | Rejected reports made against the viewing player. |
+| `%reports_last_submitted_date%` | Date/time of the last report submitted by the viewing player (format: `yyyy-MM-dd HH:mm:ss`). Returns `N/A` if none. |
+| `%reports_last_against_date%` | Date/time of the last report filed against the viewing player (format: `yyyy-MM-dd HH:mm:ss`). Returns `N/A` if none. |
 
 ## Specific Player Stats
 

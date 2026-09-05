@@ -1,0 +1,270 @@
+config-version: 4
+
+gui:
+  book:
+    error_creating: "&cОшибка при создании интерфейса."
+    reporting_header: "&4&lРепорт на игрока:\n&c{target}"
+    reasons_header: "&4&lПричины:"
+    custom_reason: "&c• Своя причина"
+    back_button: "\n&8« Назад к категориям"
+    page:
+      title: "&4&lДетали репорта\n\n"
+      reporter: "&0Репортер: &c{reporter}\n"
+      reported: "&0Нарушитель: &c{reported}\n"
+      reason: "&0Причина: &f"
+      reason_hover: "&0Наведите для просмотра"
+      reason_hover_content: "&f{reason}"
+      status: "&cСтатус: {color}{status}\n"
+      id: "&0ID: &4{id}"
+      server: "&0Сервер: &4{server}\n"
+      created_at: "&0Создан: &4{date}\n"
+      updated_at: "&0Обновлён: &4{date}\n"
+      last_updated_by: "&0Изменил: &4{name}\n"
+      click_to_change: "\n&8Нажмите для смены статуса\n"
+      reports_category_header: "&4&lКатегория репортов\n\n"
+      view_details: "&fНажмите для просмотра"
+    status_options:
+      pending: "&6⚠ Отметить как ожидающий\n"
+      resolved: "&2✔ Отметить как решённый\n"
+      rejected: "&4✘ Отклонить репорт\n"
+    hover_text:
+      report_for: "&0Нажмите, чтобы репортнуть за: &4{category}"
+      custom_reason: "&0Нажмите, чтобы указать свою причину"
+      pending: "&fНажмите, чтобы вернуть в ожидание"
+      resolved: "&fНажмите, чтобы отметить как решённый"
+      rejected: "&fНажмите, чтобы отклонить"
+      back: "&fНажмите, чтобы вернуться к категориям"
+    main_menu:
+      pending:
+        title: "&6• Ожидающие репорты"
+        hover: "&fНажмите для просмотра"
+      resolved:
+        title: "&2• Решённые репорты"
+        hover: "&fНажмите для просмотра"
+      rejected:
+        title: "&4• Отклонённые репорты"
+        hover: "&fНажмите для просмотра"
+    report_list:
+      title: "&4&lРепорты: {status}\n"
+      total: "&0Всего: &4{total}\n\n"
+      entry: "&8{index}. &4{reported}"
+      user_title: "&4&lВаши репорты\n"
+      user_entry: "&8{index}. &4{reported} {color}({status})"
+
+  container:
+    shared:
+      separator: "&8&m                                          &r"
+      navigation:
+        page_indicator:
+          title: "&fСтраница &c{page} &fиз &c{total}"
+          lore: "&fПоказано &c{start}-{end} &fиз &c{total} &fрепортов"
+        previous_page:
+          title: "&c&lПредыдущая страница"
+          lore: "&fПерейти на страницу &c{page}"
+        next_page:
+          title: "&c&lСледующая страница"
+          lore: "&fПерейти на страницу &c{page}"
+        back_button:
+          title: "&c&lНазад"
+          lore: "&fВернуться к категориям"
+
+    menus:
+      main_menu:
+        title: "&8[&cРепорты&8]"
+        pending:
+          title: "&6&lОжидающие репорты"
+          lore:
+            description: "&fПросмотр всех ожидающих репортов."
+            action: "&cНажмите для просмотра!"
+        resolved:
+          title: "&a&lРешённые репорты"
+          lore:
+            description: "&fПросмотр всех решённых репортов."
+            action: "&cНажмите для просмотра!"
+        rejected:
+          title: "&c&lОтклонённые репорты"
+          lore:
+            description: "&fПросмотр всех отклонённых репортов."
+            action: "&cНажмите для просмотра!"
+
+      category_view:
+        title: "&8[&cРепорты&8] {status}"
+        report_item:
+          title: "&f{reporter} &8→ &c{reported}"
+          lore:
+            reason: "&fПричина: &c{reason}"
+            status: "&fСтатус: &c{status}"
+            id: "&fID: &c{id}"
+            server: "&fСервер: &c{server}"
+            action: "&c&lНажмите для управления"
+
+      player_reports:
+        title: "&8[&cРепорты&8] Мои репорты"
+
+      reason_selector:
+        title: "&8[&cРепорт&8] {target}"
+        info_icon:
+          title: "&c&lРепорт на: &f{target}"
+          lore:
+            - ""
+            - "&fВыберите причину репорта"
+            - "&fНажмите на значок для отправки"
+            - ""
+        reason_item:
+          title: "&c&l{reason}"
+          lore:
+            target: " "
+            action: "&fНажмите для отправки репорта"
+        custom_reason_item:
+          title: "&c&lСвоя причина"
+          lore: "&fНажмите, чтобы ввести свою причину"
+
+    manage_report:
+      title: "&8[&cРепорт&8] #{id}"
+      back_button:
+        title: "&c&lНазад"
+        lore: "&fВернуться к репортам: &c{status}"
+      details:
+        title: "&c&lДетали репорта"
+        lore:
+          reporter: "&fРепортер: &c{reporter}"
+          reported: "&fНарушитель: &c{reported}"
+          reason: "&fПричина: &c{reason}"
+          status: "&fСтатус: &c{status}"
+          id: "&fID: &c{id}"
+          server: "&fСервер: &c{server}"
+          created_at: "&fСоздан: &c{date}"
+          updated_at: "&fОбновлён: &c{date}"
+          last_updated_by: "&fИзменил: &c{name}"
+      pending:
+        title: "&6&lПеревести в ожидание"
+        lore:
+          description: "&fОтметить репорт как ожидающий рассмотрения."
+          current_status: "&fТекущий статус: &c{status}"
+          action: "&6Нажмите для смены статуса"
+      resolved:
+        title: "&a&lОтметить как решённый"
+        lore:
+          description: "&fОтметить репорт как решённый."
+          current_status: "&fТекущий статус: &c{status}"
+          action: "&aНажмите для смены статуса"
+      rejected:
+        title: "&c&lОтклонить репорт"
+        lore:
+          description: "&fОтклонить репорт как недействительный."
+          current_status: "&fТекущий статус: &c{status}"
+          action: "&cНажмите для смены статуса"
+
+common:
+  unknown: "Неизвестно"
+  anonymous: "Аноним"
+  status:
+    pending: "Ожидает"
+    resolved: "Решён"
+    rejected: "Отклонён"
+  reasons:
+    - "Читерство/Хаки"
+    - "Оскорбления/Травля"
+    - "Спам/Реклама"
+    - "Гриферство/Вандализм"
+    - "Использование багов"
+    - "Неприемлемый скин/ник"
+    - "Неприемлемые высказывания"
+    - "Другое"
+
+messages:
+  prefix: "&8[&cРепорты&8]"
+
+  error:
+    no-permission: "{prefix} &cУ вас нет прав для этого!"
+    player-only: "{prefix} &cЭту команду могут использовать только игроки!"
+    invalid-player: "{prefix} &cТакой игрок не существует!"
+    invalid-group: "{prefix} &cНеверная группа статуса репорта."
+    report-not-found: "{prefix} &cРепорт не найден!"
+    no-reports: "{prefix} &cУ вас нет активных репортов!"
+    no-status-reports: "{prefix} &cРепортов со статусом &f{status} &cне найдено."
+    status-invalid: "{prefix} &cНеверный статус! Доступные: &f{statuses}"
+    category-invalid: "{prefix} &cНеверная категория! Доступные: &f{categories}"
+    custom-reason-disabled: "{prefix} &cСвои причины сейчас отключены."
+    custom-reason-too-short: "{prefix} &cПричина слишком короткая! Минимум: &f{min} &cсимволов"
+    custom-reason-too-long: "{prefix} &cПричина слишком длинная! Максимум: &f{max} &cсимволов"
+    usage-report: "{prefix} &fИспользование: &c/report <игрок> [причина]"
+    usage-viewreport: "{prefix} &fИспользование: &c/viewreport <id>"
+    usage-setstatus: "{prefix} &fИспользование: &c/setreportstatus <id> to <статус>"
+    invalid-report-id: "{prefix} &cНеверный ID репорта!"
+    status-already-set: "{prefix} &cРепорт уже имеет этот статус!"
+    cannot-report-self: "{prefix} &cВы не можете репортнуть самого себя."
+
+  success:
+    report-created: "{prefix} &fВаш репорт успешно &cотправлен&f!"
+
+  report:
+    cooldown: "{prefix} &fПодождите &c{time} &fперед отправкой следующего репорта."
+    limit-reached: "{prefix} &cВы достигли максимального количества активных репортов."
+    notification: "{prefix} &f{reporter} &cрепортнул &f{reported} &fпо причине: &c{category}"
+    status-change: "{prefix} &fСтатус репорта &c#{id} &fизменён на &c{status}&f."
+    custom-reason-prompt: "{prefix} &fВведите причину в чат. Сообщение будет приватным."
+
+  admin:
+    reload-success: "{prefix} &fКонфигурация успешно &cперезагружена&f!"
+    reload-failure: "{prefix} &cОшибка перезагрузки конфигурации. Проверьте консоль."
+
+# Discord Messages
+# Текст, используемый Discord-командами, ответами и встраиваемыми сообщениями.
+discord:
+  commands:
+    options:
+      id: "ID репорта"
+    resolve:
+      description: "Отметить репорт как решённый"
+    reject:
+      description: "Отклонить репорт"
+    pending:
+      description: "Вернуть репорт в статус ожидания"
+    lookup:
+      description: "Показать подробную информацию о репорте"
+    reports:
+      description: "Список всех активных репортов"
+    help:
+      description: "Показать меню помощи"
+  fields:
+    reporter: "Репортёр"
+    reported: "Нарушитель"
+    reported-player: "Нарушитель"
+    id: "ID"
+    reason: "Причина"
+    server: "Сервер"
+    location: "Местоположение"
+    status: "Статус"
+    submitted-at: "Дата отправки"
+  notifications:
+    new-report:
+      title: "Новый репорт (#{id})"
+      footer: "Время - {date}"
+    status-update:
+      title: "Репорт обновлён"
+      description: "Репорт **#{id}** был **{status}** администратором {admin}."
+      footer: "AevorinReports — {date}"
+  responses:
+    guild-only: "Команды можно использовать только на сервере."
+    no-permission: "У вас нет прав на управление репортами."
+    database-unavailable: "База данных репортов в настоящее время недоступна. Обратитесь к администратору или проверьте консоль сервера."
+    report-not-found: "Репорт #{id} не найден."
+    status-already-set: "Репорт #{id} уже имеет статус {status}."
+    status-updated-title: "Репорт обновлён"
+    status-updated-description: "Репорт **#{id}** успешно обновлён до статуса **{status}**."
+    no-active-reports: "Нет активных репортов."
+  help:
+    title: "Помощь по AevorinReports"
+    description: "Управляйте репортами Minecraft через Discord с помощью официальных слеш-команд."
+    reports: "Список всех ожидающих репортов."
+    lookup: "Показать подробную информацию о репорте."
+    resolve: "Отметить репорт как решённый."
+    reject: "Отклонить репорт."
+    pending: "Вернуть репорт в ожидание."
+    help: "Показать это меню помощи."
+  lookup:
+    title: "Детали репорта: #{id}"
+  reports:
+    title: "Активные репорты"
+    and-more: "*...и ещё*"

@@ -9,6 +9,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -21,6 +23,7 @@ public class AevorinReportsExpansion extends PlaceholderExpansion {
 
     private static final long CACHE_TTL_MS = 30_000L;
     private static final int CACHE_MAX_SIZE = 512;
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private final BukkitPlugin plugin;
     private final ConcurrentMap<String, CachedValue> cache = new ConcurrentHashMap<>();
@@ -224,6 +227,18 @@ public class AevorinReportsExpansion extends PlaceholderExpansion {
                     return String.valueOf(db.getReportCountByServerAndStatus(serverName, Report.ReportStatus.REJECTED));
                 }
                 return String.valueOf(db.getReportCountByStatus(Report.ReportStatus.REJECTED));
+
+            // Date placeholders — last report submitted BY player
+            case "last_submitted_date":
+                if (uuid == null) return null;
+                LocalDateTime lastSubmitted = db.getLastReportDateByReporter(uuid);
+                return lastSubmitted != null ? lastSubmitted.format(DATE_FORMAT) : "N/A";
+
+            // Date placeholders — last report filed AGAINST player
+            case "last_against_date":
+                if (uuid == null) return null;
+                LocalDateTime lastAgainst = db.getLastReportDateAgainst(uuid);
+                return lastAgainst != null ? lastAgainst.format(DATE_FORMAT) : "N/A";
 
             default:
                 return null;

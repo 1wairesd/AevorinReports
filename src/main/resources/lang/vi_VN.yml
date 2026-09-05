@@ -19,7 +19,7 @@
 # Hỗ trợ MiniMessage (e.g., <rainbow>, <red>, <gradient:blue:aqua>)
 # Các mã code cũ (<1.7) cũng được hỗ trợ.
 
-config-version: 3
+config-version: 4
 
 # GUI Interface Settings
 # Contains all text formatting for the Report Plugin's interactive GUIs.
@@ -43,6 +43,9 @@ gui:
       status: "&7Trạng thái: {color}{status}\n"
       id: "&7ID: &0{id}"
       server: "&7Máy chủ: &c{server}\n"
+      created_at: "&7Ngày tạo: &0{date}\n"
+      updated_at: "&7Cập nhật: &0{date}\n"
+      last_updated_by: "&7Sửa bởi: &0{name}\n"
       click_to_change: "\n&8Nhấn để thay đổi trạng thái\n"
       reports_category_header: "&4Danh mục tố cáo\n\n"
       view_details: "&7Nhấn để xem chi tiết"
@@ -158,6 +161,9 @@ gui:
           status: "<gradient:#AFA3FF:#AFA3FF>Trạng thái:</gradient> <white>{status}</white>"
           id: "<gradient:#AFA3FF:#AFA3FF>ID:</gradient> <white>{id}</white>"
           server: "<gradient:#AFA3FF:#AFA3FF>Máy chủ:</gradient> <white>{server}</white>"
+          created_at: "<gradient:#AFA3FF:#AFA3FF>Ngày tạo:</gradient> <white>{date}</white>"
+          updated_at: "<gradient:#AFA3FF:#AFA3FF>Cập nhật:</gradient> <white>{date}</white>"
+          last_updated_by: "<gradient:#AFA3FF:#AFA3FF>Sửa bởi:</gradient> <white>{name}</white>"
       pending:
         title: "&6Đặt trạng thái đang chờ xử lí"
         lore:
@@ -271,6 +277,7 @@ discord:
     status-update:
       title: "Báo Cáo Đã Cập Nhật"
       description: "Báo cáo **#{id}** đã được **{status}** bởi {admin}."
+      footer: "AevorinReports - {date}"
   responses:
     guild-only: "Lệnh chỉ có thể được sử dụng trong máy chủ."
     no-permission: "Bạn không có quyền quản lý báo cáo."
