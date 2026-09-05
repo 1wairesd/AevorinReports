@@ -1,8 +1,4 @@
-review:
-  enabled: true
-  auto_review_on:
-    - pull_request_opened
-    - pull_request_synchronized
-  summary: true
-  suggestions: true
-  verbosity: medium
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: "en-US"
+reviews:
+  profile: "chill"

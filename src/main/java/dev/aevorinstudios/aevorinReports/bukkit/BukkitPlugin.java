@@ -13,9 +13,9 @@ import dev.aevorinstudios.aevorinReports.handlers.CustomReasonHandler;
 import dev.aevorinstudios.aevorinReports.utils.ExceptionHandler;
 import dev.aevorinstudios.aevorinReports.utils.ModrinthUpdateChecker;
 import dev.aevorinstudios.aevorinReports.config.LanguageManager;
-import dev.faststats.bukkit.BukkitMetrics;
-import dev.faststats.core.ErrorTracker;
-import dev.faststats.core.data.Metric;
+import dev.faststats.bukkit.BukkitContext;
+import dev.faststats.ErrorTracker;
+import dev.faststats.data.Metric;
 import dev.aevorinstudios.aevorinReports.reports.Report;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -46,7 +46,7 @@ public class BukkitPlugin extends JavaPlugin implements org.bukkit.command.Comma
 
     // FastStats Metrics
     public static final ErrorTracker FAST_STATS_ERROR_TRACKER = ErrorTracker.contextAware();
-    private BukkitMetrics fastStats;
+    private BukkitContext fastStats;
 
     // Plugin state tracking
     private boolean databaseInitialized = false;
@@ -82,6 +82,13 @@ public class BukkitPlugin extends JavaPlugin implements org.bukkit.command.Comma
             if (!initializeDatabase()) {
                 getServer().getPluginManager().disablePlugin(this);
                 return;
+            }
+
+            // Start cross-server notification polling if using MySQL
+            if ("mysql".equalsIgnoreCase(configManager.getConfig().getDatabase().getType())) {
+                new dev.aevorinstudios.aevorinReports.tasks.NotificationPollingTask(this)
+                    .runTaskTimerAsynchronously(this, 100L, 100L); // Poll every 5 seconds (100 ticks)
+                getLogger().info("Started cross-server notification polling task.");
             }
 
             // Initialize CustomReasonHandler
@@ -428,41 +435,42 @@ public class BukkitPlugin extends JavaPlugin implements org.bukkit.command.Comma
             // Note: The token should ideally be provided by the developer
             // Replace "YOUR_FASTSTATS_TOKEN" with your actual project token from
             // faststats.dev
-            fastStats = BukkitMetrics.factory()
-                    .token("cdaa0f2024f6fc7c8e32992f30799c43")
-                    .errorTracker(FAST_STATS_ERROR_TRACKER)
-                    .addMetric(Metric.number("pending_reports",
-                            () -> {
+            fastStats = new BukkitContext.Factory(this, "cdaa0f2024f6fc7c8e32992f30799c43")
+                    .errorTrackerService(FAST_STATS_ERROR_TRACKER)
+                    .metrics(f -> f
+                            .addMetric(Metric.number("pending_reports",
+                                    () -> {
+                                        DatabaseManager db = getDatabaseManager();
+                                        return db != null ? db.getReportCountByStatus(Report.ReportStatus.PENDING) : 0;
+                                    }))
+                            .addMetric(Metric.number("total_reports", () -> {
                                 DatabaseManager db = getDatabaseManager();
-                                return db != null ? db.getReportCountByStatus(Report.ReportStatus.PENDING) : 0;
+                                return db != null ? db.getTotalReportsCount() : 0;
                             }))
-                    .addMetric(Metric.number("total_reports", () -> {
-                        DatabaseManager db = getDatabaseManager();
-                        return db != null ? db.getTotalReportsCount() : 0;
-                    }))
-                    .addMetric(Metric.string("gui_provider",
-                            () -> configManager != null && configManager.getConfig() != null
-                                    && configManager.getConfig().getReports() != null
-                                    && configManager.getConfig().getReports().getGui() != null
-                                            ? configManager.getConfig().getReports().getGui().getType()
-                                            : "unknown"))
-                    .addMetric(Metric.string("db_backend",
-                            () -> configManager != null && configManager.getConfig() != null
-                                    && configManager.getConfig().getDatabase() != null
-                                            ? configManager.getConfig().getDatabase().getType()
-                                            : "unknown"))
-                    .addMetric(Metric.number("configured_categories",
-                            () -> configManager != null && configManager.getConfig() != null
-                                    && configManager.getConfig().getReports() != null
-                                    && configManager.getConfig().getReports().getCategories() != null
-                                            ? configManager.getConfig().getReports().getCategories().size()
-                                            : 0))
-                    .addMetric(Metric.string("discord_integration",
-                            () -> configManager != null && configManager.getConfig() != null
-                                    && configManager.getConfig().getDiscord() != null
-                                            ? String.valueOf(configManager.getConfig().getDiscord().isEnabled())
-                                            : "false"))
-                    .create(this);
+                            .addMetric(Metric.string("gui_provider",
+                                    () -> configManager != null && configManager.getConfig() != null
+                                            && configManager.getConfig().getReports() != null
+                                            && configManager.getConfig().getReports().getGui() != null
+                                                    ? configManager.getConfig().getReports().getGui().getType()
+                                                    : "unknown"))
+                            .addMetric(Metric.string("db_backend",
+                                    () -> configManager != null && configManager.getConfig() != null
+                                            && configManager.getConfig().getDatabase() != null
+                                                    ? configManager.getConfig().getDatabase().getType()
+                                                    : "unknown"))
+                            .addMetric(Metric.number("configured_categories",
+                                    () -> configManager != null && configManager.getConfig() != null
+                                            && configManager.getConfig().getReports() != null
+                                            && configManager.getConfig().getReports().getCategories() != null
+                                                    ? configManager.getConfig().getReports().getCategories().size()
+                                                    : 0))
+                            .addMetric(Metric.string("discord_integration",
+                                    () -> configManager != null && configManager.getConfig() != null
+                                            && configManager.getConfig().getDiscord() != null
+                                                    ? String.valueOf(configManager.getConfig().getDiscord().isEnabled())
+                                                    : "false"))
+                            .create())
+                    .create();
 
             fastStats.ready();
             getLogger().info("FastStats Metrics initialized and ready.");

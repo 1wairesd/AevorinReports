@@ -247,57 +247,57 @@ messages:
 discord:
   commands:
     options:
-      id: "The Report ID"
+      id: "L'ID del Report"
     resolve:
-      description: "Resolve a report"
+      description: "Risolvi un report"
     reject:
-      description: "Reject a report"
+      description: "Rifiuta un report"
     pending:
-      description: "Set report status back to pending"
+      description: "Imposta lo stato del report su in attesa"
     lookup:
-      description: "Lookup detailed information about a report"
+      description: "Cerca informazioni dettagliate su un report"
     reports:
-      description: "List all active reports"
+      description: "Elenca tutti i report attivi"
     help:
-      description: "Show the help menu"
+      description: "Mostra il menu di aiuto"
   fields:
-    reporter: "Reporter"
-    reported: "Reported"
-    reported-player: "Reported Player"
+    reporter: "Segnalatore"
+    reported: "Segnalato"
+    reported-player: "Giocatore Segnalato"
     id: "ID"
-    reason: "Reason"
+    reason: "Motivo"
     server: "Server"
-    location: "Location"
-    status: "Status"
-    submitted-at: "Submitted At"
+    location: "Posizione"
+    status: "Stato"
+    submitted-at: "Inviato Il"
   notifications:
     new-report:
-      title: "New Report (#{id})"
+      title: "Nuovo Report (#{id})"
       footer: "AevorinReports - {date}"
     status-update:
-      title: "Report Updated"
-      description: "Report **#{id}** has been **{status}** by {admin}."
+      title: "Report Aggiornato"
+      description: "Il report **#{id}** è stato **{status}** da {admin}."
       footer: "AevorinReports - {date}"
   responses:
-    guild-only: "Commands can only be used in a server."
-    no-permission: "You don't have permission to manage reports."
-    database-unavailable: "The report database is currently unavailable. Please contact an administrator or check the server console."
-    report-not-found: "Report #{id} not found."
-    status-already-set: "Report #{id} is already {status}."
-    status-updated-title: "Report Updated"
-    status-updated-description: "Successfully updated Report **#{id}** to **{status}**."
-    no-active-reports: "There are no active reports."
+    guild-only: "I comandi possono essere usati solo in un server."
+    no-permission: "Non hai i permessi per gestire i report."
+    database-unavailable: "Il database dei report non è al momento disponibile. Contatta un amministratore o controlla la console del server."
+    report-not-found: "Report #{id} non trovato."
+    status-already-set: "Il report #{id} è già {status}."
+    status-updated-title: "Report Aggiornato"
+    status-updated-description: "Report **#{id}** aggiornato con successo a **{status}**."
+    no-active-reports: "Non ci sono report attivi."
   help:
-    title: "AevorinReports Help"
-    description: "Manage Minecraft reports from Discord using official Slash Commands."
-    reports: "List all active pending reports."
-    lookup: "Show detailed info about a report."
-    resolve: "Mark a report as resolved."
-    reject: "Mark a report as rejected."
-    pending: "Move a report back to pending."
-    help: "Show this help menu."
+    title: "Aiuto AevorinReports"
+    description: "Gestisci i report di Minecraft da Discord usando i comandi Slash ufficiali."
+    reports: "Elenca tutti i report attivi in attesa."
+    lookup: "Mostra informazioni dettagliate su un report."
+    resolve: "Segna un report come risolto."
+    reject: "Segna un report come rifiutato."
+    pending: "Sposta un report su in attesa."
+    help: "Mostra questo menu di aiuto."
   lookup:
-    title: "Report Details: #{id}"
+    title: "Dettagli Report: #{id}"
   reports:
-    title: "Active Reports"
-    and-more: "*...and more*"
+    title: "Report Attivi"
+    and-more: "*...e altri*"

@@ -119,8 +119,8 @@ public class DiscordListener extends ListenerAdapter {
             return;
         }
 
-        String reporter = PlayerNameResolver.resolvePlayerName(report.getReporterUuid());
-        String reported = PlayerNameResolver.resolvePlayerName(report.getReportedUuid());
+        String reporter = PlayerNameResolver.resolveReporterName(report);
+        String reported = PlayerNameResolver.resolveReportedName(report);
 
         String colorHex = plugin.getConfig().getString("discord.lookup-color", "#00ffff");
         Color color = Color.CYAN;
@@ -166,7 +166,7 @@ public class DiscordListener extends ListenerAdapter {
 
         StringBuilder sb = new StringBuilder();
         for (Report report : activeReports) {
-            String reported = PlayerNameResolver.resolvePlayerName(report.getReportedUuid());
+            String reported = PlayerNameResolver.resolveReportedName(report);
             sb.append("`#").append(report.getId()).append("` - **").append(reported).append("** (")
                     .append(report.getReason()).append(")\n");
 

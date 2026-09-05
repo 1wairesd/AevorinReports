@@ -82,6 +82,15 @@ public class AevorinReportsExpansion extends PlaceholderExpansion {
             // Opportunistic cleanup to keep the cache bounded
             if (cache.size() > CACHE_MAX_SIZE) {
                 cache.entrySet().removeIf(e -> e.getValue().expiresAt() < now);
+                if (cache.size() > CACHE_MAX_SIZE) {
+                    int toRemove = cache.size() - CACHE_MAX_SIZE;
+                    java.util.Iterator<java.util.Map.Entry<String, CachedValue>> it = cache.entrySet().iterator();
+                    while (it.hasNext() && toRemove > 0) {
+                        it.next();
+                        it.remove();
+                        toRemove--;
+                    }
+                }
             }
         }
         return result;

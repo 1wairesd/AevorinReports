@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.1] - 2026-08-27
+
+### New Features & Improvements
+- **Language Optimization:** Only language files explicitly configured in `config.yml` are loaded into memory, significantly reducing startup time and memory footprint.
+- **Cross-Server Notifications:** Added real-time cross-server report notifications by periodically polling the shared database, allowing staff on any server to be alerted of new reports.
+- **Discord Localization:** Added a `discord` section to all language files (config-version 3), bringing localized Discord commands, report details, notifications, help text, and status messages. German and English translations are currently included.
+- **FastStats Upgrade:** Upgraded FastStats dependency to version 0.29.0 and migrated to the new `BukkitContext` API.
+- **Discord Integrations:** Routed slash command replies, embeds, and command descriptions through `LanguageManager`. Report status changes now record the latest updater and automatically synchronize Discord log updates.
+
+### Bug Fixes
+- **Offline Player Resolution:** Added `reporter_name` and `reported_name` caching columns to the database schema. This fixes the issue where players who had never joined the staff member's server would show up as "Unknown" in GUIs and Discord.
+- **Thread Safety:** Improved report handling responsiveness by moving heavy database work off the main thread.
+- **Discord Shutdown:** Gracefully await JDA shutdown on plugin disable to completely avoid "zip file closed" exceptions and memory leaks after `/reload`.
+- **General Fixes:** Clearer handling of unavailable players and missing translations.
+
+### Performance
+- **Active Reports Limit:** Now uses a single `COUNT` query for the active reports limit instead of loading all player reports into memory.
+- **Async Saves:** Save reports asynchronously and apply cooldowns immediately to prevent spam while the `INSERT` query is in flight.
+- **Async GUIs:** Run GUI click SQL queries asynchronously and reopen inventories back on the main thread (Folia-safe via `SchedulerUtils`, guarded by `isOnline`).
+- **Tab Complete Caching:** Cache offline player names for tab-complete with a 5-minute TTL and async refresh, completely avoiding iterating through `getOfflinePlayers()` per tab completion.
+- **Placeholder Caching:** Added a 30-second TTL cache to PlaceholderAPI expansion responses to reduce database load.
+- **Database Indexing:** Added SQL indexes on `reporter_uuid`, `reported_uuid`, `status`, `server_name+status`, and `updated_at` to drastically improve report search and retrieval speed.
+
+### Special Thanks
+- A huge thanks to [1wairesd](https://github.com/1wairesd) for contributing to this release!
+
 ## [1.1.0] - 2026-07-20
 
 ### Improvements & Bug Fixes

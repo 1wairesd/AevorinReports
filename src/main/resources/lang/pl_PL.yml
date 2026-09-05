@@ -247,57 +247,57 @@ messages:
 discord:
   commands:
     options:
-      id: "The Report ID"
+      id: "ID Zgłoszenia"
     resolve:
-      description: "Resolve a report"
+      description: "Rozwiąż zgłoszenie"
     reject:
-      description: "Reject a report"
+      description: "Odrzuć zgłoszenie"
     pending:
-      description: "Set report status back to pending"
+      description: "Ustaw status zgłoszenia na oczekujące"
     lookup:
-      description: "Lookup detailed information about a report"
+      description: "Wyszukaj szczegółowe informacje o zgłoszeniu"
     reports:
-      description: "List all active reports"
+      description: "Wyświetl wszystkie aktywne zgłoszenia"
     help:
-      description: "Show the help menu"
+      description: "Pokaż menu pomocy"
   fields:
-    reporter: "Reporter"
-    reported: "Reported"
-    reported-player: "Reported Player"
+    reporter: "Zgłaszający"
+    reported: "Zgłoszony"
+    reported-player: "Zgłoszony Gracz"
     id: "ID"
-    reason: "Reason"
-    server: "Server"
-    location: "Location"
+    reason: "Powód"
+    server: "Serwer"
+    location: "Lokalizacja"
     status: "Status"
-    submitted-at: "Submitted At"
+    submitted-at: "Przesłano"
   notifications:
     new-report:
-      title: "New Report (#{id})"
+      title: "Nowe Zgłoszenie (#{id})"
       footer: "AevorinReports - {date}"
     status-update:
-      title: "Report Updated"
-      description: "Report **#{id}** has been **{status}** by {admin}."
+      title: "Zgłoszenie Zaktualizowane"
+      description: "Zgłoszenie **#{id}** zostało **{status}** przez {admin}."
       footer: "AevorinReports - {date}"
   responses:
-    guild-only: "Commands can only be used in a server."
-    no-permission: "You don't have permission to manage reports."
-    database-unavailable: "The report database is currently unavailable. Please contact an administrator or check the server console."
-    report-not-found: "Report #{id} not found."
-    status-already-set: "Report #{id} is already {status}."
-    status-updated-title: "Report Updated"
-    status-updated-description: "Successfully updated Report **#{id}** to **{status}**."
-    no-active-reports: "There are no active reports."
+    guild-only: "Komendy mogą być używane tylko na serwerze."
+    no-permission: "Nie masz uprawnień do zarządzania zgłoszeniami."
+    database-unavailable: "Baza danych zgłoszeń jest obecnie niedostępna. Skontaktuj się z administratorem lub sprawdź konsolę serwera."
+    report-not-found: "Nie znaleziono zgłoszenia #{id}."
+    status-already-set: "Zgłoszenie #{id} jest już {status}."
+    status-updated-title: "Zgłoszenie Zaktualizowane"
+    status-updated-description: "Pomyślnie zaktualizowano zgłoszenie **#{id}** na **{status}**."
+    no-active-reports: "Nie ma aktywnych zgłoszeń."
   help:
-    title: "AevorinReports Help"
-    description: "Manage Minecraft reports from Discord using official Slash Commands."
-    reports: "List all active pending reports."
-    lookup: "Show detailed info about a report."
-    resolve: "Mark a report as resolved."
-    reject: "Mark a report as rejected."
-    pending: "Move a report back to pending."
-    help: "Show this help menu."
+    title: "Pomoc AevorinReports"
+    description: "Zarządzaj zgłoszeniami Minecraft z Discorda używając oficjalnych Slash Commands."
+    reports: "Wyświetl wszystkie aktywne oczekujące zgłoszenia."
+    lookup: "Pokaż szczegółowe informacje o zgłoszeniu."
+    resolve: "Oznacz zgłoszenie jako rozwiązane."
+    reject: "Oznacz zgłoszenie jako odrzucone."
+    pending: "Przenieś zgłoszenie z powrotem do oczekujących."
+    help: "Pokaż to menu pomocy."
   lookup:
-    title: "Report Details: #{id}"
+    title: "Szczegóły Zgłoszenia: #{id}"
   reports:
-    title: "Active Reports"
-    and-more: "*...and more*"
+    title: "Aktywne Zgłoszenia"
+    and-more: "*...i więcej*"

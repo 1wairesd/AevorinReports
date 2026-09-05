@@ -1,7 +1,7 @@
 # AevorinReports Configuration File
 
 # Please Do not change the config version
-config-version: 6
+config-version: 7
 
 # Server Configuration
 # The name of this server, used to identify where reports come from in a multi-server network.
@@ -10,6 +10,7 @@ server-name: "survival"
 
 # Language Settings
 # The language file to use from the lang/ folder (excluding the .yml extension)
+# Options: "en_US", "it_IT", "sk_SK", "pl_PL", "zh_CN", "de_DE", "nl_NL", "vi_VN"
 language: "en_US"
 
 # Database Configuration

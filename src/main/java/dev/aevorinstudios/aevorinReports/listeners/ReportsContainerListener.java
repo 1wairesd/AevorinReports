@@ -156,20 +156,28 @@ public class ReportsContainerListener implements Listener {
         else if (slot == 53) newStatus = Report.ReportStatus.REJECTED;
 
         if (newStatus != null && newStatus != report.getStatus()) {
+            Report.ReportStatus oldStatus = report.getStatus();
             Report.ReportStatus fNewStatus = newStatus;
             report.setStatus(fNewStatus);
+            String playerName = player.getName();
+            report.setLastUpdatedBy(playerName);
 
             runAsync(() -> {
                 try {
                     plugin.getDatabaseManager().updateReport(report);
                 } catch (Exception e) {
                     plugin.getLogger().warning("Failed to update report status: " + e.getMessage());
+                    runSync(player, () -> {
+                        report.setStatus(oldStatus);
+                        LanguageManager lang = LanguageManager.get(plugin);
+                        dev.aevorinstudios.aevorinReports.utils.MessageUtils.sendMessage(player, lang.getMessage("messages.error.database-unavailable", java.util.Map.of("id", "none")));
+                    });
                     return;
                 }
 
                 // Public log entry in the Discord log channel (JDA is thread-safe for sending)
                 if (plugin.getDiscordManager() != null) {
-                    plugin.getDiscordManager().sendLogUpdate(report, player.getName());
+                    plugin.getDiscordManager().sendLogUpdate(report, playerName);
                 }
 
                 // Reopen category view on the main thread
@@ -253,10 +261,12 @@ public class ReportsContainerListener implements Listener {
     }
 
     private void runSync(Player player, Runnable task) {
-        // Guard against players disconnecting while the async query is in flight
-        if (!player.isOnline()) {
-            return;
-        }
-        dev.aevorinstudios.aevorinReports.utils.SchedulerUtils.runTask(plugin, player, task);
+        dev.aevorinstudios.aevorinReports.utils.SchedulerUtils.runTask(plugin, player, () -> {
+            // Guard against players disconnecting while the async query is in flight
+            if (!player.isOnline()) {
+                return;
+            }
+            task.run();
+        });
     }
 }
